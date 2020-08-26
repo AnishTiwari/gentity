@@ -1,0 +1,13 @@
+<EntityTypes  xsi:schemaLocation="http://www.antm.com ./test.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns="http://www.antm.com">
+  <Entity Description="testdesc" Persistent="true" Name="testentity" >
+    <Entity.Attributes>
+      <Attribute Description="attrdesc1" Name="attr1" Type="Enum"/>
+      <Attribute.Type>
+	<Enum Name="enum1"/>
+	<Enum Name="enum2"/>
+      </Attribute.Type>
+      <Attribute Description="attrdesc2" Type="long" Name="attr2" />
+    </Entity.Attributes>
+  </Entity>
+</EntityTypes>
