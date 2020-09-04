@@ -6,4 +6,11 @@ Parent - Node
 
 
 
+since the attributes in the xml can vary in position i.e; sometimes name can be the first attr in the entity node
+sometimes desc can be first so there is a need to store the parsed in a struct to easily write to a file
+
+
+therefore a struct is used to store a entity (its attrs, relations) 
+
+
 

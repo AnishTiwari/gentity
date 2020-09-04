@@ -1,13 +1,14 @@
-<EntityTypes  xsi:schemaLocation="http://www.antm.com ./test.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xmlns="http://www.antm.com">
-  <Entity Description="testdesc" Persistent="true" Name="testentity" >
+<Container>
+  <Entity Description="testdesc" Persistent="true" Name="testentity">
     <Entity.Attributes>
-      <Attribute Description="attrdesc1" Name="attr1" Type="Enum"/>
-      <Attribute.Type>
-	<Enum Name="enum1"/>
-	<Enum Name="enum2"/>
-      </Attribute.Type>
-      <Attribute Description="attrdesc2" Type="long" Name="attr2" />
-    </Entity.Attributes>
-  </Entity>
-</EntityTypes>
+      <Attribute AttrDescription="attrdesc1" AttrName="attr1" Type="Enum" / >
+      <Attribute AttrDescription="attrdesc2" Type="long"  AttrName="attr2" />
+    </Entity.Attributes> 
+  </Entity> 
+  <Entity Description="testdesc1" Persistent="true" Name="testentity1" Parent="testentity" ParentRelation="OneToOne" >
+    <Entity.Attributes>
+      <Attribute AttrDescription="attrdesc11" AttrName="attr11" Type="Enum1" / >
+      <Attribute AttrDescription="attrdesc21" Type="long1"  AttrName="attr21" />
+    </Entity.Attributes> 
+  </Entity> 
+</Container>
