@@ -16,10 +16,18 @@ typedef attr* attr_t;
 typedef struct attributes_container attr_c;
 typedef attr_c* ac_t;
 
+/* typedef struct relation r; */
+/* typedef r* r_t; */
+
+/* struct relation{ */
+/*   int child; */
+/* }; */
+
 struct attributes_container{
   int idx;
   attr_t attribute;
 };
+
 struct attributes{
   char* attr_name;
   char* attr_description;
@@ -27,6 +35,8 @@ struct attributes{
 };
 
 struct entity{
+  int* relation; 
+  int size;
   char* name;
   char* description;
   char* parent;

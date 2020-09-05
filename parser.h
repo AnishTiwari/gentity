@@ -12,24 +12,7 @@
 #include "./utility.h"
 
 #define FILE_NAME "./resources/entitytypes.xml"
-
-/* typedef struct store s; */
-/* typedef s* s_t; */
-
-/* typedef struct store_container sc; */
-/* typedef sc* sc_t; */
-
-/* struct store { */
-/*   char* entity_name; */
-/*   int sql_alchemy_end; */
-/* }; */
-
-/* struct store_container { */
-/*   int idx; */
-/*   s_t entity; */
-/* }; */
-
-/* sc_t ent; */
+#define __CONCAT_INT(a,b) a##b
 
 
 int parse(){
@@ -42,20 +25,12 @@ int parse(){
     return 0;
   }
 
-
   /* init all generators here */
 
   if(sql_alchemy_init_file() != 1){
     printf("Exiting now due to file init error\n");
     exit(0);
   }
-
-  /* allocate memory for store container struct */
-  if( (ent = (sc_t)malloc(sizeof(sc))) == NULL){
-    perror("MALLOC:");
-  }
-  ent->idx=0;
-  ent->entity = malloc(sizeof(s));
 
   _d_t parsed;
   en_t my_entity = NULL;
@@ -77,10 +52,8 @@ int parse(){
       }
       else
 	{
-	  printf("word parsed is %s\n",curr_word);
 	  i=0;
-
-	  if(  (strstr(curr_word, "/Entity.Attributes") != NULL)){
+	  if( (strstr(curr_word, "/Entity.Attributes") != NULL)){
 	    
 	  }
 	  else if(   (strstr(curr_word,"/Entity" )!= NULL)){
@@ -89,27 +62,14 @@ int parse(){
 
 	    container->en_idx++;
 	    container->entity = realloc(container->entity, sizeof(en) * (container->en_idx+1));
-
-
-	    printf("%d is the total attributes found!!!\n",my_entity->attributes->idx);
-	    for(int i=0;i < my_entity->attributes->idx ;i++){
-	      printf("Attr Name is %s \t  Description is %s \t type is %s !!!!!\n", my_entity->attributes->attribute[i].attr_name,my_entity->attributes->attribute[i].attr_description,my_entity->attributes->attribute[i].type); 
-	    }
-	    /* CALL THE GENERATORS HERE */
-
-	    
-/* 	    ent->entity[ent->idx].entity_name = malloc(sizeof(char)* strlen(my_entity->name)); */
-
-/* 	    strcpy( ent->entity[ent->idx].entity_name, my_entity->name); */
-/* ent->entity[ent->idx].sql_alchemy_end =0 ; */
-
-
-	    g_sql_alchemy(container);
-
-/* 	    ent->entity = realloc(ent->entity, sizeof(ent->entity)); */
-/* 	    ent->idx++;	    */
+	   
 	  }
 
+	  else if( strstr(curr_word, "/Container") != NULL ){
+	    /* CALL THE GENERATORS HERE */
+	    g_sql_alchemy(container);
+
+	  }
 	  else  if(strstr(curr_word, "Entity.Attributes") != NULL){
 	    /* allocate memory to contain attribute */
 	    my_entity->attributes->attribute = malloc(sizeof(attr) * 1);
@@ -125,6 +85,8 @@ int parse(){
 	      perror("MALLOC");
 	    }
 	    my_entity->attributes->idx =0;
+	    my_entity->relation = (int *)malloc(sizeof(int) * 1);
+	    my_entity->size = -1;
 
 	  }
 
@@ -133,6 +95,7 @@ int parse(){
 	    if( (container = malloc(sizeof(en_c))) == NULL) { perror("MALLOC:");}
 	    container->en_idx = 0;
 	    container->entity = malloc(sizeof(en));
+
 	  }
 	  else{
 	    /* call split only it contains key-value pairs */
@@ -148,7 +111,7 @@ int parse(){
 		int x=0,y=0,counter=0;
 		while(parsed->value[y] != '\0'  && counter !=2){
 		  if(parsed->value[y] != '"')
-		  sanitised_value[x++] = parsed->value[y++];
+		    sanitised_value[x++] = parsed->value[y++];
 		  else
 		    {
 		      counter++;
@@ -156,8 +119,7 @@ int parse(){
 		    }
 		}
 		sanitised_value[x] ='\0';
-		/* strncpy(sanitised_value, &parsed->value[1], (strlen(parsed->value))-2); */
-		printf("TTTTTTTTTTTTT: %s \n",sanitised_value);
+		/* printf("TTTTTTTTTTTTT: %s \n",sanitised_value); */
 		if(strcmp(parsed->key, "Name") == 0){
 		  my_entity->name  = malloc(sizeof(strlen(sanitised_value)));
 		  strcpy(my_entity->name , sanitised_value);
@@ -170,13 +132,29 @@ int parse(){
 
 	
 		else if(strcmp(parsed->key, "Parent") == 0){
+
+
+		  int entity_no;
 		  my_entity->parent  = malloc(sizeof(strlen(sanitised_value)));
 		  strcpy(my_entity->parent , sanitised_value);
+		  /* find the parent entity in the container struct */
+
+		  if( (entity_no = find_entity(container, my_entity->parent))  == -1) {perror("NO SUCH ENTITY:");}
+		  else
+		    {
+		      container->entity[entity_no].size +=1;
+		      if(container->entity[entity_no].size !=0)
+		      
+		        container->entity[entity_no].relation = realloc( container->entity[entity_no].relation, sizeof(container->entity[entity_no].size)+1  );
+		      
+		      container->entity[entity_no].relation[container->entity[entity_no].size] = container->en_idx;		      
+		    }
 		}
 	
 		else if(strcmp(parsed->key, "ParentRelation") == 0){
 		  my_entity->parent_relation  = malloc(sizeof(strlen(sanitised_value)));
 		  strcpy(my_entity->parent_relation , sanitised_value);
+
 		}
 		else if(strcmp(parsed->key, "AttrName") == 0){
 		  my_entity->attributes->attribute[my_entity->attributes->idx].attr_name = malloc(sizeof(strlen(sanitised_value)));
@@ -201,7 +179,7 @@ int parse(){
 
 	      }
 	    if(parsed->end){
-
+  
 	      /* 1) assign the attribute,
 		 2) allocate a new attribute struct memory for ++idx 
 		 3) free & create a new my_attr

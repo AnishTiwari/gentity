@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "./structure.h"
+
 typedef struct dict _d;
 typedef _d* _d_t;
 
@@ -91,16 +93,17 @@ void to_upper(char* string)
         (*string >= 'a' && *string <= 'z') ? *string -= OFFSET : *string;
 }
 
-/* copy content from one file to another */
-void copy_content(FILE* fptr1, FILE* fptr2){
-// Read contents from file 
-  char c;
-  c = fgetc(fptr1); 
-    while (c != EOF) 
-    { 
-        fputc(c, fptr2); 
-        c = fgetc(fptr1); 
+/* find entity in container struct */
+int find_entity(en_c_t container, char * entity){
+  for(int i=0;i < container->en_idx; i++){
+
+    if(strcmp (container->entity[i].name, entity ) == 0){
+      printf("Found @ %d",i);
+      return i;
     }
-    
+
+  }
+  return -1;
 }
+
 #endif

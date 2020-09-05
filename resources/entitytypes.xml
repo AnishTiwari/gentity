@@ -10,5 +10,17 @@
       <Attribute AttrDescription="attrdesc11" AttrName="attr11" Type="Enum1" / >
       <Attribute AttrDescription="attrdesc21" Type="long1"  AttrName="attr21" />
     </Entity.Attributes> 
+  </Entity>
+  <Entity Description="testdesc3" Persistent="true" Name="testentity3" Parent="testentity" ParentRelation="OneToMany" >
+    <Entity.Attributes>
+      <Attribute AttrDescription="attrdesc112" AttrName="attr121" Type="Enum12" / >
+      <Attribute AttrDescription="attrdesc221" Type="long21"  AttrName="attr212" />
+    </Entity.Attributes> 
   </Entity> 
-</Container>
+  <Entity Description="testdesc4" Persistent="true" Name="testentity4" Parent="testentity" ParentRelation="ManyToMany" >
+    <Entity.Attributes>
+      <Attribute AttrDescription="attrdesc112" AttrName="attr121" Type="Enum12" / >
+      <Attribute AttrDescription="attrdesc221" Type="long21"  AttrName="attr212" />
+    </Entity.Attributes> 
+  </Entity>          
+</Container> 
