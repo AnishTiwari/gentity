@@ -12,10 +12,12 @@ sometimes desc can be first so there is a need to store the parsed in a struct t
 
 therefore a struct is used to store a entity (its attrs, relations) 
 
+* Supported generators
+  + FLASK_SQL_ALCHEMY
 
 + relations supported
  + One to One
  + One To many
  + Many to Many
 
-* 
+ 
