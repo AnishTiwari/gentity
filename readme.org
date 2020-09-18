@@ -1,4 +1,4 @@
-**GENTITY TOOL
+*GENTITY TOOL
 
 Parent - Node
 
@@ -21,3 +21,4 @@ therefore a struct is used to store a entity (its attrs, relations)
  + Many to Many
 
  
+updated on :<2020-09-06 Sun>

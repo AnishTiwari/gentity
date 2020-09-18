@@ -1,0 +1,5 @@
+<DataTypes>
+
+  <DataType BaseType="Integer" Name="DummyInt"  />
+  <DataType BaseType="String" Length="40" Name="DummyString" />
+</DataTypes>

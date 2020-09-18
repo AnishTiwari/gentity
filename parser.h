@@ -14,7 +14,6 @@
 #define FILE_NAME "./resources/entitytypes.xml"
 #define __CONCAT_INT(a,b) a##b
 
-
 int parse(){
 
   FILE *fp;
@@ -132,8 +131,6 @@ int parse(){
 
 	
 		else if(strcmp(parsed->key, "Parent") == 0){
-
-
 		  int entity_no;
 		  my_entity->parent  = malloc(sizeof(strlen(sanitised_value)));
 		  strcpy(my_entity->parent , sanitised_value);
