@@ -1,15 +1,17 @@
 #include "./datatypeparser.h"
 
 void add_user(dt_t dt) {
-  HASH_ADD_INT( s, name, dt );
+  HASH_ADD_STR( s, name, dt );
 }
 
 
 dt_t find_key( char* key, dt_t dt ){
   HASH_FIND_STR(s, key, dt);
   if(dt){
+    dt_t temp_dt;
+    temp_dt = dt;
     printf("FOUND !!! %s for key %s\n", dt->basetype, key);
-    return dt;
+    return temp_dt;
   }
   else{
     print_users();
@@ -108,14 +110,6 @@ int datatypeparse(){
 
 	      printf("ADDING DATATYEP \n");
 	      add_user(my_dt);
-
-	      HASH_FIND_STR( s, "DummyInt", my_dt);;
-	      if(my_dt){
-		printf("%s \n\n\n--", my_dt->basetype);
-	      }
-	      else{
-		abort();
-	      }
 
 	    }
 	    
