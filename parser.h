@@ -10,6 +10,7 @@
 #include "./generators/g_sql_alchemy.h"
 #include "./structure.h"
 #include "./utility.h"
+#include "./datatypeparser.c"
 
 #define FILE_NAME "./resources/entitytypes.xml"
 #define __CONCAT_INT(a,b) a##b
@@ -65,9 +66,22 @@ int parse(){
 	  }
 
 	  else if( strstr(curr_word, "/Container") != NULL ){
-	    /* CALL THE GENERATORS HERE */
-	    g_sql_alchemy(container);
 
+
+	    /* calling the datatype parser here and printing the parsed datatyes  */
+
+	    datatypeparse();
+
+	    printf("********************************************\n");
+	    
+	    /* CALL THE GENERATORS HERE */
+
+
+	    g_sql_alchemy(container, my_dt);
+
+
+
+	    
 	  }
 	  else  if(strstr(curr_word, "Entity.Attributes") != NULL){
 	    /* allocate memory to contain attribute */

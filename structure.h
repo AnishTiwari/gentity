@@ -2,6 +2,7 @@
 /* this file contains the structure of entity */
 #ifndef STRUCTURE_H
 
+#include "./lib/uthash.h"
 #define STRUCTURE_H
 
 typedef struct entity_container en_c;
@@ -48,6 +49,20 @@ struct entity{
 struct entity_container{
   int en_idx;
   en_t entity;
+};
+
+
+/* datatype hash table struct */
+
+typedef struct datatype dt;
+typedef dt* dt_t;
+
+struct datatype{
+
+  char* name;
+  char* basetype;
+  char* length;
+  UT_hash_handle hh; 
 };
 
 #endif

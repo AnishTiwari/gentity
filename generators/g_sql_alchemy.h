@@ -12,6 +12,7 @@
 
 #include "../structure.h"
 #include "../utility.h"
+#include "../datatypeparser.h"
 
 FILE *fp1;
 
@@ -32,7 +33,8 @@ int sql_alchemy_init_file(){
 }
 
 /* actual writer method */
-void g_sql_alchemy(en_c_t container){
+void g_sql_alchemy(en_c_t container, dt_t dt){
+
   printf("%d is the total attributes found!!!\n",container->en_idx);
   for(int i=0;i < container->en_idx ;i++){
     printf(" %d ) %s is related to \t %d", i, container->entity[i].name, container->entity[0].relation[0] ); 
@@ -54,6 +56,7 @@ void g_sql_alchemy(en_c_t container){
     if(my_entity->size >= 0 ){
 
       for(int rel_idx =0; rel_idx <= my_entity->size; rel_idx ++){
+
 	/* Association table creation */
 	if(strcmp(container->entity[my_entity->relation[rel_idx]].parent_relation, "ManyToMany") == 0)
 	  {
@@ -85,6 +88,8 @@ void g_sql_alchemy(en_c_t container){
 	    special = 1;
 	    fputs("\n\n",fp1);
 	  }
+
+	
       }
     }	  
     if(my_entity->description != NULL){
@@ -96,15 +101,22 @@ void g_sql_alchemy(en_c_t container){
     fprintf(fp1, "class %s(db.Model):\n",temp_name);
   
     fprintf(fp1, "\t__tablename__ = %s", my_entity->name);
-  
+
+    /* assigning the attributes to model attribute */
+
     for(int i=0;i < my_entity->attributes->idx;i++){
-      if(my_entity->attributes->attribute[i].attr_description != NULL){
+      
+      dt_t temp_dt =  find_key(my_entity->attributes->attribute[i].type, my_dt);
+       
+
+     if(my_entity->attributes->attribute[i].attr_description != NULL){
 	fprintf(fp1, "\n\t#%s",my_entity->attributes->attribute[i].attr_description);
   
       }
-      fprintf(fp1, "\n\t%s = db.Column(db.Integer) ",my_entity->attributes->attribute[i].attr_name);
+     fprintf(fp1, "\n\t%s = db.Column(db.%s) ",my_entity->attributes->attribute[i].attr_name, temp_dt->basetype);
     
     }
+    
   
     /* add relationship when parent, parent_relation are set in entitytypes.xml */
     if(my_entity->parent != NULL){
