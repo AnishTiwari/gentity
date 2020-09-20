@@ -13,12 +13,12 @@ testentity4_testentity = db.table("testentity4_testentity",
 class Testentity(db.Model):
 	__tablename__ = testentity
 	#attrdesc1
-	attr1 = db.Column(db."Integer") 
+	attr1 = db.Column(db.Integer) 
 	#attrdesc2
-	attr2 = db.Column(db."String") 
+	attr2 = db.Column(db.String) 
 	testentity1 = db.relationship("Testentity1", backref="testentity" ,uselist=False)
 	testentity3s = db.relationship("Testentity3", backref="testentity")
-	testentity4s = db.relationship("Testentity4", secondary=P3)ã®Utestentity4_testentity, backref=db.backrefs("P3)ã®Utestentity4_testentity") )
+	testentity4s = db.relationship("Testentity4", secondary=testentity4_testentity, backref=db.backrefs("testentity4_testentity") )
 
 
 
@@ -26,9 +26,9 @@ class Testentity(db.Model):
 class Testentity1(db.Model):
 	__tablename__ = testentity1
 	#attrdesc11
-	attr11 = db.Column(db."Integer") 
+	attr11 = db.Column(db.Integer) 
 	#attrdesc21
-	attr21 = db.Column(db."Integer") 
+	attr21 = db.Column(db.Integer) 
 	testentity_id = db.Column(db.Integer,db.ForeignKey('testentity.id'), unique=True)
 
 
@@ -37,19 +37,19 @@ class Testentity1(db.Model):
 class Testentity3(db.Model):
 	__tablename__ = testentity3
 	#attrdesc112
-	attr121 = db.Column(db."String") 
+	attr121 = db.Column(db.String) 
 	#attrdesc221
-	attr212 = db.Column(db."String") 
+	attr212 = db.Column(db.String) 
 	testentity_id = db.Column(db.Integer,db.ForeignKey('testentity.id'))
 
 
 
 # testdesc4
 class Testentity4(db.Model):
-        __tablename__ = testentity4
+	__tablename__ = testentity4
 	#attrdesc112
-	attr121 = db.Column(db."Integer") 
+	attr121 = db.Column(db.Integer) 
 	#attrdesc221
-	attr212 = db.Column(db."String") 
+	attr212 = db.Column(db.String) 
 
 

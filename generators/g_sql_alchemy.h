@@ -13,6 +13,7 @@
 #include "../structure.h"
 #include "../utility.h"
 #include "../datatypeparser.h"
+#include "./g_data_mapper.c"
 
 FILE *fp1;
 
@@ -103,17 +104,15 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
     fprintf(fp1, "\t__tablename__ = %s", my_entity->name);
 
     /* assigning the attributes to model attribute */
-
     for(int i=0;i < my_entity->attributes->idx;i++){
       
       dt_t temp_dt =  find_key(my_entity->attributes->attribute[i].type, my_dt);
-       
 
-     if(my_entity->attributes->attribute[i].attr_description != NULL){
+      if(my_entity->attributes->attribute[i].attr_description != NULL){
 	fprintf(fp1, "\n\t#%s",my_entity->attributes->attribute[i].attr_description);
-  
       }
-     fprintf(fp1, "\n\t%s = db.Column(db.%s) ",my_entity->attributes->attribute[i].attr_name, temp_dt->basetype);
+      /* calling the g_mapper fn to map the correct datatype name */
+      fprintf(fp1, "\n\t%s = db.Column(db.%s) ",my_entity->attributes->attribute[i].attr_name, g_mapper(temp_dt->basetype));
     
     }
     
@@ -142,6 +141,7 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 
       if(my_entity->size >= 0 ){
 
+	/* WRITES TO THE CURRENT CHILD IN CASE OF RELATION */
 	for(int rel_idx =0; rel_idx <= my_entity->size; rel_idx ++){
 	  /* relation is one to one with child */
 	  if(strcmp(container->entity[my_entity->relation[rel_idx]].parent_relation, "OneToOne") == 0)
@@ -183,7 +183,7 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 
 	    strcpy(caps_1, container->entity[my_entity->relation[rel_idx]].name);
 	    
-	    strcat(assoc_entity,caps_1);
+	    strcpy(assoc_entity, caps_1);
 
 	    to_upper(&caps_1[0]);
 	    strcat(assoc_entity, "_");

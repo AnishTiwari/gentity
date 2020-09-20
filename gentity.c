@@ -7,5 +7,9 @@ int main(){
     printf("Succesfully Parsed!!");
   }
 
+  else{
+    perror("ERROR:");
+  }
+
   return 0;
 }

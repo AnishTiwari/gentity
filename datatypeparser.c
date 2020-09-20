@@ -1,21 +1,19 @@
 #include "./datatypeparser.h"
 
+/* lib functions provided by uthash */
 void add_user(dt_t dt) {
   HASH_ADD_STR( s, name, dt );
 }
-
 
 dt_t find_key( char* key, dt_t dt ){
   HASH_FIND_STR(s, key, dt);
   if(dt){
     dt_t temp_dt;
     temp_dt = dt;
-    printf("FOUND !!! %s for key %s\n", dt->basetype, key);
     return temp_dt;
   }
   else{
     print_users();
-    printf("KEY ERROR -%s-\n\n", key);
     exit(1);
   }
 }
@@ -28,8 +26,9 @@ void print_users() {
     printf("user id -%s- : name %s\n", ss->name, ss->basetype);
   }
 }
-int datatypeparse(){
+/* end of uthash lib fns: */
 
+int datatypeparse(){
 
   FILE *fp;
   fp = fopen(DATATYPE_FILE, "r");
@@ -43,7 +42,7 @@ int datatypeparse(){
   char curr_char;
   char curr_word[128] ;
 
-  /* read the .xml file and parse it word by word*/
+  /* read the datatypes.xml file and parse it word by word*/
   while((curr_char = fgetc(fp)) != EOF ){
 
     if(curr_char != ' ' ){
@@ -53,24 +52,19 @@ int datatypeparse(){
     else {
       curr_word[i] = '\0';
       if(curr_word[0] == '\0'){
-	printf("CAME ACROSS SPACES TOKEN \n");
       }
       else
 	{
 	  i=0;
 
 	  if( (strstr(curr_word, "/DataTypes") != NULL)){
-
-	    printf("ABOUT TO PRINT\n");
-	    print_users();
+	    /* do nothing */
 	  }
 	  else if( (strstr(curr_word, "DataTypes") != NULL)){
 	  }
 
 	  else if( (strstr(curr_word, "DataType") != NULL)){
-	    printf("\n\nALLOCATING UTHASH STRUCT \n");
 	    my_dt = malloc(sizeof(dt));
-	    
 	  }
 
 	  else{
@@ -79,11 +73,9 @@ int datatypeparse(){
 	   
 	    if(parsed != NULL && parsed->key != NULL && parsed->value !=NULL)
 	      {
+		
 		/* assign value to dt struct */
-
 		if(strcmp(parsed->key, "BaseType") == 0){
-
-		  printf("%s\n\n",parsed->value);
 		  
 		  my_dt->basetype = malloc(sizeof(char) * strlen(parsed->value));
 		  strcpy(my_dt->basetype, parsed->value);
@@ -95,7 +87,6 @@ int datatypeparse(){
 		  strcpy(my_dt->name, parsed->value);
 		}
 
-
 		else if(strcmp("Length", parsed->key) == 0){
 		  my_dt->length = malloc(sizeof(char) * strlen(parsed->value));
 		  strcpy(my_dt->length, parsed->value);
@@ -105,10 +96,8 @@ int datatypeparse(){
 	      }
 
 
-
 	    if(strstr(curr_word, "/>") != NULL){
-
-	      printf("ADDING DATATYEP \n");
+	      /* Adding the struct to the uthash hash table */
 	      add_user(my_dt);
 
 	    }
