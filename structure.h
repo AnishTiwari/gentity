@@ -33,6 +33,7 @@ struct attributes{
   char* attr_name;
   char* attr_description;
   char* type;
+  int is_nullable;
 };
 
 struct entity{
@@ -61,7 +62,7 @@ struct datatype{
 
   char* name;
   char* basetype;
-  char* length;
+  int  length;
   UT_hash_handle hh; 
 };
 

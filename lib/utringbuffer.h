@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include "utarray.h"  // for "UT_icd"
 
+
 typedef struct {
     unsigned i;       /* index of next available slot; wraps at n */
     unsigned n;       /* capacity */

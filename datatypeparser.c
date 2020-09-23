@@ -8,6 +8,8 @@ void add_user(dt_t dt) {
 dt_t find_key( char* key, dt_t dt ){
   HASH_FIND_STR(s, key, dt);
   if(dt){
+    printf("\n \n finding for length \n\n");
+    printf("%s------- %d", dt->name, dt->length);
     dt_t temp_dt;
     temp_dt = dt;
     return temp_dt;
@@ -73,24 +75,40 @@ int datatypeparse(){
 	   
 	    if(parsed != NULL && parsed->key != NULL && parsed->value !=NULL)
 	      {
-		
+		char* sanitised_value;
+
+		sanitised_value = malloc(sizeof(char) * strlen(parsed->value));
+		int x=0,y=0,counter=0;
+		while(parsed->value[y] != '\0'  && counter !=2){
+		  if(parsed->value[y] != '"')
+		    sanitised_value[x++] = parsed->value[y++];
+		  else
+		    {
+		      counter++;
+		      y++;
+		    }
+		}
+		sanitised_value[x] ='\0';
+
 		/* assign value to dt struct */
 		if(strcmp(parsed->key, "BaseType") == 0){
 		  
-		  my_dt->basetype = malloc(sizeof(char) * strlen(parsed->value));
-		  strcpy(my_dt->basetype, parsed->value);
+		  my_dt->basetype = malloc(sizeof(char) * strlen(sanitised_value));
+		  strcpy(my_dt->basetype, sanitised_value);
 		}
 
 		else if(strcmp("Name",parsed->key)==0){
 
-		  my_dt->name = malloc(sizeof(char) * strlen(parsed->value));
-		  strcpy(my_dt->name, parsed->value);
+		  my_dt->name = malloc(sizeof(char) * strlen(sanitised_value));
+		  strcpy(my_dt->name, sanitised_value);
 		}
 
 		else if(strcmp("Length", parsed->key) == 0){
-		  my_dt->length = malloc(sizeof(char) * strlen(parsed->value));
-		  strcpy(my_dt->length, parsed->value);
+		  char* temp;
 
+		  my_dt->length = strtol(sanitised_value, &temp, 10);
+
+		  printf("LEN: %d",my_dt->length);
 		}
 		
 	      }

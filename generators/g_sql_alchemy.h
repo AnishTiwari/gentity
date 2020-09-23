@@ -76,7 +76,7 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	    strcat(assoc_entity, "_");
 	    free(caps_1);
 	    caps_1 = malloc(sizeof(char) * (strlen(my_entity->name)));
- strcpy( caps_1 ,my_entity->name);
+	    strcpy( caps_1 ,my_entity->name);
 	   
 	    /* to_upper(&caps_1[0]); */
 	    strcat(assoc_entity,caps_1);
@@ -103,7 +103,7 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
   
     fprintf(fp1, "\t__tablename__ = %s", my_entity->name);
 
-    /* assigning the attributes to model attribute */
+    /* assigning the attribute values to class model attribute */
     for(int i=0;i < my_entity->attributes->idx;i++){
       
       dt_t temp_dt =  find_key(my_entity->attributes->attribute[i].type, my_dt);
@@ -111,9 +111,36 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
       if(my_entity->attributes->attribute[i].attr_description != NULL){
 	fprintf(fp1, "\n\t#%s",my_entity->attributes->attribute[i].attr_description);
       }
-      /* calling the g_mapper fn to map the correct datatype name */
-      fprintf(fp1, "\n\t%s = db.Column(db.%s) ",my_entity->attributes->attribute[i].attr_name, g_mapper(temp_dt->basetype));
-    
+      /* calling the g_mapper fn to map the correct datatype name
+       * :: if basetype got from g_mapper is string then pu the
+       *     string length eg: string(20) if length=20
+       * :: else no need to do anything just write the basetype
+       */
+      char* got_basetype =  g_mapper(temp_dt->basetype);
+      if(my_entity->attributes->attribute[i].is_nullable == 1)
+	{
+	  if(strcmp("String", got_basetype) == 0){
+	    
+	    fprintf(fp1, "\n\t%s = db.Column(db.%s(%d), nullable=False)", my_entity->attributes->attribute[i].attr_name,got_basetype, find_key(my_dt->name,  dt)->length);
+	  }
+	  else
+	    {
+	      fprintf(fp1, "\n\t%s = db.Column(db.%s, nullable=False)", my_entity->attributes->attribute[i].attr_name,got_basetype);
+	    }
+
+	}
+      else{
+
+	if(strcmp("String", got_basetype) == 0){
+	  fprintf(fp1, "\n\t%s = db.Column(db.%s(%d))", my_entity->attributes->attribute[i].attr_name,got_basetype,  find_key(my_dt->name,  dt)->length);
+	}
+	else
+	  {
+	    fprintf(fp1, "\n\t%s = db.Column(db.%s)", my_entity->attributes->attribute[i].attr_name,got_basetype);
+	  }
+
+	
+      }
     }
     
   
@@ -213,10 +240,10 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
       
     }
 
-  fputs("\n\n\n",fp1);
+    fputs("\n\n\n",fp1);
   
-  fclose(fp1);
-} /* end of for */
+    fclose(fp1);
+  } /* end of for */
 }
 
 #endif

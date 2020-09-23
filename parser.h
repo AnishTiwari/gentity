@@ -1,4 +1,3 @@
-
 #ifndef PARSER_H
 
 #define PARSER_H
@@ -132,7 +131,8 @@ int parse(){
 		    }
 		}
 		sanitised_value[x] ='\0';
-		/* printf("TTTTTTTTTTTTT: %s \n",sanitised_value); */
+
+		
 		if(strcmp(parsed->key, "Name") == 0){
 		  my_entity->name  = malloc(sizeof(strlen(sanitised_value)));
 		  strcpy(my_entity->name , sanitised_value);
@@ -153,6 +153,7 @@ int parse(){
 		  if( (entity_no = find_entity(container, my_entity->parent))  == -1) {perror("NO SUCH ENTITY:");}
 		  else
 		    {
+		      
 		      container->entity[entity_no].size +=1;
 		      if(container->entity[entity_no].size !=0)
 		      
@@ -168,6 +169,9 @@ int parse(){
 
 		}
 		else if(strcmp(parsed->key, "AttrName") == 0){
+		  /* making the nullable flag false by default here */
+		my_entity->attributes->attribute[my_entity->attributes->idx].is_nullable = 0;
+ 
 		  my_entity->attributes->attribute[my_entity->attributes->idx].attr_name = malloc(sizeof(strlen(sanitised_value)));
 		  strcpy(my_entity->attributes->attribute[my_entity->attributes->idx].attr_name , sanitised_value);
 		}
@@ -181,7 +185,17 @@ int parse(){
 		  my_entity->attributes->attribute[my_entity->attributes->idx].type = malloc(sizeof(strlen(sanitised_value)));
 		  strcpy(my_entity->attributes->attribute[my_entity->attributes->idx].type , sanitised_value);
 		}
+
+		    
+		else if(strcmp(parsed->key, "Nullable") == 0){
+		  if(strcmp(sanitised_value, "False") == 0)
+		    my_entity->attributes->attribute[my_entity->attributes->idx].is_nullable = 1;
+		 
+		
+		}
+		
 		else{
+		  
 		  if(strcmp(parsed->value ,"True") == 0)
 		    my_entity->persistent = 1;
 		  else

@@ -1,8 +1,8 @@
 <Container>
   <Entity Description="testdesc" Persistent="true" Name="testentity">
     <Entity.Attributes>
-      <Attribute AttrDescription="attrdesc1" AttrName="attr1" Type="DummyInt" / >
-      <Attribute AttrDescription="attrdesc2" Type="DummyString"  AttrName="attr2" />
+      <Attribute AttrDescription="attrdesc1" AttrName="attr1" Type="DummyInt" Nullable="False"  / >
+      <Attribute AttrDescription="attrdesc2" Type="DummyString"   AttrName="attr2" />
     </Entity.Attributes> 
   </Entity> 
   <Entity Description="testdesc1" Persistent="true" Name="testentity1" Parent="testentity" ParentRelation="OneToOne" >
@@ -13,14 +13,14 @@
   </Entity>
   <Entity Description="testdesc3" Persistent="true" Name="testentity3" Parent="testentity" ParentRelation="OneToMany" >
     <Entity.Attributes>
-      <Attribute AttrDescription="attrdesc112" AttrName="attr121" Type="DummyString" / >
+      <Attribute AttrDescription="attrdesc112" AttrName="attr121" Type="DummyString"  / >
       <Attribute AttrDescription="attrdesc221" Type="DummyString"  AttrName="attr212" />
     </Entity.Attributes> 
   </Entity> 
   <Entity Description="testdesc4" Persistent="true" Name="testentity4" Parent="testentity" ParentRelation="ManyToMany" >
     <Entity.Attributes>
       <Attribute AttrDescription="attrdesc112" AttrName="attr121" Type="DummyInt" / >
-      <Attribute AttrDescription="attrdesc221" Type="DummyString"  AttrName="attr212" />
+      <Attribute AttrDescription="attrdesc221" Type="DummyString"  AttrName="attr212"  />
     </Entity.Attributes> 
   </Entity>          
 </Container> 
