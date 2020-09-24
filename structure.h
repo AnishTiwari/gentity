@@ -25,8 +25,9 @@ typedef attr_c* ac_t;
 /* }; */
 
 struct attributes_container{
-  int idx;
+ 
   attr_t attribute;
+   int idx;
 };
 
 struct attributes{
@@ -38,18 +39,20 @@ struct attributes{
 
 struct entity{
   int* relation; 
-  int size;
+  ac_t attributes;
   char* name;
   char* description;
   char* parent;
   char* parent_relation;
   int  persistent;
-  ac_t attributes;
+ int size;
+ 
 };
 
 struct entity_container{
-  int en_idx;
   en_t entity;
+  int en_idx;
+
 };
 
 
@@ -60,10 +63,10 @@ typedef dt* dt_t;
 
 struct datatype{
 
+  UT_hash_handle hh; 
   char* name;
   char* basetype;
   int  length;
-  UT_hash_handle hh; 
 };
 
 #endif
