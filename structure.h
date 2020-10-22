@@ -35,10 +35,11 @@ struct attributes{
   char* attr_description;
   char* type;
   int is_nullable;
+  char* validation;
 };
 
 struct entity{
-  int* relation; 
+  int* relation; 		/* stores the ptr of any child relation found for the current entity */
   ac_t attributes;
   char* name;
   char* description;
@@ -62,11 +63,11 @@ typedef struct datatype dt;
 typedef dt* dt_t;
 
 struct datatype{
-
   UT_hash_handle hh; 
   char* name;
   char* basetype;
   int  length;
+  char* rule;
 };
 
 #endif

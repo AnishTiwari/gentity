@@ -1,3 +1,8 @@
+/* creates a hash tbale where key is the datatype 
+ * found in the entitytypes.xml and value is the
+ * datatypes.xml parsed value
+ */
+
 #include "./datatypeparser.h"
 
 /* lib functions provided by uthash */
@@ -105,17 +110,19 @@ int datatypeparse(){
 
 		else if(strcmp("Length", parsed->key) == 0){
 		  char* temp;
-
 		  my_dt->length = strtol(sanitised_value, &temp, 10);
 
-		  printf("LEN: %d",my_dt->length);
 		}
-		
+		/* 		else if(strcmp("Rule", parsed->key) == 0){ */
+		/*   my_dt->rule = malloc(sizeof(char) * strlen(sanitised_value)); */
+		/*   strcpy(my_dt->rule, sanitised_value); */
+		/* } */		
 	      }
 
 
 	    if(strstr(curr_word, "/>") != NULL){
 	      /* Adding the struct to the uthash hash table */
+	      printf("RULE IS :%s", my_dt->rule);
 	      add_user(my_dt);
 
 	    }

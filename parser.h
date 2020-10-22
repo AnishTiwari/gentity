@@ -7,6 +7,8 @@
 #include<string.h>
 
 #include "./generators/g_sql_alchemy.h"
+#include "./generators/marshmallow/g_marshmallow.c"
+
 #include "./structure.h"
 #include "./utility.h"
 #include "./datatypeparser.c"
@@ -27,10 +29,18 @@ int parse(){
   /* init all generators here */
 
   if(sql_alchemy_init_file() != 1){
-    printf("Exiting now due to file init error\n");
+    printf("Exiting now due to file SQL_ALCHEMY init error\n");
     exit(0);
   }
 
+  
+  if(marshmallow_init_file() != 1){
+    printf("Exiting now due to file Marshmallow init error\n");
+    exit(0);
+  }
+
+  /* end of inits */
+  
   _d_t parsed;
   en_t my_entity = NULL;
   en_c_t container =NULL;
@@ -75,10 +85,10 @@ int parse(){
 	    
 	    /* CALL THE GENERATORS HERE */
 
-
+	    
 	    g_sql_alchemy(container, my_dt);
-
-
+	    g_marshmallow(container, my_dt);
+	    
 
 	    
 	  }
@@ -134,19 +144,19 @@ int parse(){
 
 		
 		if(strcmp(parsed->key, "Name") == 0){
-		  my_entity->name  = malloc(sizeof(strlen(sanitised_value)));
+		  my_entity->name  =(char *) malloc(sizeof(strlen(sanitised_value)) + 1);
 		  strcpy(my_entity->name , sanitised_value);
 		}
 
 		else if(strcmp(parsed->key, "Description") == 0){
-		  my_entity->description  = malloc(sizeof(strlen(sanitised_value)));
+		  my_entity->description  = malloc(sizeof(strlen(sanitised_value)) +1 );
 		  strcpy(my_entity->description , sanitised_value);
 		}
 
 	
 		else if(strcmp(parsed->key, "Parent") == 0){
 		  int entity_no;
-		  my_entity->parent  = malloc(sizeof(strlen(sanitised_value)));
+		  my_entity->parent  = malloc(sizeof(strlen(sanitised_value)) +1 );
 		  strcpy(my_entity->parent , sanitised_value);
 		  /* find the parent entity in the container struct */
 
@@ -164,39 +174,45 @@ int parse(){
 		}
 	
 		else if(strcmp(parsed->key, "ParentRelation") == 0){
-		  my_entity->parent_relation  = malloc(sizeof(strlen(sanitised_value)));
+		  my_entity->parent_relation  = malloc(sizeof(strlen(sanitised_value)) + 1 );
 		  strcpy(my_entity->parent_relation , sanitised_value);
 
 		}
 		else if(strcmp(parsed->key, "AttrName") == 0){
 		  /* making the nullable flag false by default here */
-		my_entity->attributes->attribute[my_entity->attributes->idx].is_nullable = 0;
+		my_entity->attributes->attribute[my_entity->attributes->idx].is_nullable = 1;
  
-		  my_entity->attributes->attribute[my_entity->attributes->idx].attr_name = malloc(sizeof(strlen(sanitised_value)));
+		  my_entity->attributes->attribute[my_entity->attributes->idx].attr_name = malloc(sizeof(strlen(sanitised_value)) +1 );
 		  strcpy(my_entity->attributes->attribute[my_entity->attributes->idx].attr_name , sanitised_value);
 		}
 	
 		else if(strcmp(parsed->key, "AttrDescription") == 0){
-		  my_entity->attributes->attribute[my_entity->attributes->idx].attr_description = malloc(sizeof(strlen(sanitised_value)));
+		  my_entity->attributes->attribute[my_entity->attributes->idx].attr_description = (char *)malloc(sizeof(strlen(sanitised_value)) +1);
 		  strcpy( my_entity->attributes->attribute[my_entity->attributes->idx].attr_description , sanitised_value);
 		}
-	
+
+		else if(strcmp(parsed->key, "Validation") == 0){
+		  my_entity->attributes->attribute[my_entity->attributes->idx].validation = (char *)malloc(sizeof(strlen(sanitised_value)) +1);
+		  strcpy( my_entity->attributes->attribute[my_entity->attributes->idx].validation , sanitised_value);
+		}
+
+		
 		else if(strcmp(parsed->key, "Type") == 0){
-		  my_entity->attributes->attribute[my_entity->attributes->idx].type = malloc(sizeof(strlen(sanitised_value)));
+		  my_entity->attributes->attribute[my_entity->attributes->idx].type = malloc(sizeof(strlen(sanitised_value)) +1 );
 		  strcpy(my_entity->attributes->attribute[my_entity->attributes->idx].type , sanitised_value);
 		}
 
 		    
 		else if(strcmp(parsed->key, "Nullable") == 0){
 		  if(strcmp(sanitised_value, "False") == 0)
-		    my_entity->attributes->attribute[my_entity->attributes->idx].is_nullable = 1;
+		    my_entity->attributes->attribute[my_entity->attributes->idx].is_nullable = 0;
 		 
 		
 		}
-		
+
+		/* persistent or non persistent */
 		else{
-		  
-		  if(strcmp(parsed->value ,"True") == 0)
+		  if(strcmp(parsed->value ,"\"True\"") == 0)
 		    my_entity->persistent = 1;
 		  else
 		    my_entity->persistent =0;
@@ -205,7 +221,8 @@ int parse(){
 	      }
 	    if(parsed->end){
   
-	      /* 1) assign the attribute,
+	      /*
+		 1) assign the attribute,
 		 2) allocate a new attribute struct memory for ++idx 
 		 3) free & create a new my_attr
 	      */

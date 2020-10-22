@@ -41,7 +41,7 @@ char* g_mapper(char* datatype_name){
   }
   
   /* exit if no mapper found */
-  printf("DataType Mapper %s: No such Datatype type mapper found in sql alchemy _mapper\n", datatype_name);
+  printf("\n\n DataType Mapper %s: No such Datatype type mapper found in sql alchemy _mapper\n", datatype_name);
   exit(1);
 }
 
