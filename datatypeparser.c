@@ -122,7 +122,6 @@ int datatypeparse(){
 
 	    if(strstr(curr_word, "/>") != NULL){
 	      /* Adding the struct to the uthash hash table */
-	      printf("RULE IS :%s", my_dt->rule);
 	      add_user(my_dt);
 
 	    }

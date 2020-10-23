@@ -1,0 +1,135 @@
+#include "./enumtypeparser.h"
+
+et_t prev_ = NULL;
+
+
+void add_new_enum(ec_t ec_ ) {
+  printf("%s\n", ec_->enum_name);
+  HASH_ADD_STR( s1, enum_name, ec_ );
+}
+
+ec_t find_enum( char* key, ec_t ec ){
+  HASH_FIND_STR(s1, key, ec);
+  if(ec){
+    printf("\n \n finding for length \n\n");
+    ec_t temp_ec;
+    temp_ec = ec;
+    return temp_ec;
+  }
+  else{
+    print_enums();
+    exit(1);
+  }
+}
+
+void print_enums() {
+  ec_t ss;
+
+  for(ss=s1; ss != NULL; ss=ss->hh.next) {
+    printf("Val is %s\n", ss->enum_name);
+  }
+}
+/* end of uthash lib fns: */
+
+
+int enumtypeparse(){
+
+  FILE *fp;
+  fp = fopen(ENUMTYPE_FILE, "r");
+
+  if( !fp ){
+    perror("No such file or content found !!\n");
+    return 1;
+  }
+
+  int i = 0; 
+  char curr_char;
+  char curr_word[108] ;
+
+  while((curr_char = fgetc(fp)) != EOF ){
+
+    if(curr_char != ' ' ){
+      curr_word[i++] = curr_char;
+    }
+    /*  end of word reached */
+    else {
+      curr_word[i] = '\0';
+      if(curr_word[0] == '\0'){
+      }
+      else
+	{
+	  i=0;
+
+	  if( (strstr(curr_word, "/EnumTypes") != NULL)){
+	    /* do nothing */
+	  }
+	  else if( (strstr(curr_word, "EnumTypes") != NULL)){
+	  }
+	  else if(strstr(curr_word, "/EnumType") != NULL){
+
+
+	    /* assigning enum to enum container */
+
+	    my_ec->enums = my_et;
+	    add_new_enum(my_ec);
+
+	      }
+
+
+	  else if( (strstr(curr_word, "EnumType") != NULL)){
+	     my_ec   = malloc(sizeof(ec));
+	    
+	  }
+
+	  else if(strstr(curr_word, "EnumVal" ) != NULL){
+	    my_et   = malloc(sizeof(et));
+	     
+	  }
+	  
+	  else{
+	    printf("ENTERED: %s \n\n", curr_word);	    
+	    parsed = split(curr_word);
+	   
+	    if(parsed != NULL && parsed->key != NULL && parsed->value != NULL)
+	      {
+		char* sanitised_value;
+
+		sanitised_value = malloc(sizeof(char) * strlen(parsed->value));
+		int x=0, y=0, counter=0;
+		while(parsed->value[y] != '\0'  && counter !=2){
+		  if(parsed->value[y] != '"')
+		    sanitised_value[x++] = parsed->value[y++];
+		  else
+		    {
+		      counter++;
+		      y++;
+		    }
+		}
+		sanitised_value[x] = '\0';
+
+		/* assigning values */
+		if(strcmp(parsed->key , "Value") == 0){
+		  my_et->value = malloc(sizeof(char) * strlen(sanitised_value));
+		  strcpy(my_et->value, sanitised_value);
+
+		  printf("%s______________________\n", sanitised_value);
+		  /* assign the pointer to next enum */
+		  my_et->next = prev_;
+		  prev_ = my_et;	  
+		  
+		}
+		
+	    	else if(strcmp(parsed->key , "Name") == 0){
+		  my_ec->enum_name = malloc(sizeof(char) * strlen(sanitised_value));
+		  strcpy(my_ec->enum_name, sanitised_value);
+
+		}
+	
+	      }
+	  }
+	}
+    }
+  } /* end of file read  */
+  
+  return 0;
+}

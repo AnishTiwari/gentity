@@ -1,0 +1,6 @@
+<EnumTypes> 
+  <EnumType Name="TestEnum" > 
+    <EnumVal Value="MyEnum2" /> 
+    <EnumVal Value="MyEnum1" /> 
+  </EnumType> 
+</EnumTypes> 

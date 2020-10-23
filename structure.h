@@ -24,10 +24,9 @@ typedef attr_c* ac_t;
 /*   int child; */
 /* }; */
 
-struct attributes_container{
- 
+struct attributes_container{ 
   attr_t attribute;
-   int idx;
+  int idx;
 };
 
 struct attributes{
@@ -46,7 +45,7 @@ struct entity{
   char* parent;
   char* parent_relation;
   int  persistent;
- int size;
+  int size;
  
 };
 
@@ -70,4 +69,23 @@ struct datatype{
   char* rule;
 };
 
+
+typedef struct enumcontainer ec;
+typedef ec* ec_t;
+
+typedef struct enumtype et;
+typedef et* et_t;
+
+/* enumtype struct (linked list)  */
+struct enumtype{
+  char* value;
+  et_t next;
+};
+
+struct enumcontainer{
+  UT_hash_handle hh; 
+  char* enum_name;
+  et_t enums ;
+ 
+};
 #endif

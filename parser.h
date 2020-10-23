@@ -12,6 +12,7 @@
 #include "./structure.h"
 #include "./utility.h"
 #include "./datatypeparser.c"
+#include "./enumtypeparser.c"
 
 #define FILE_NAME "./resources/entitytypes.xml"
 #define __CONCAT_INT(a,b) a##b
@@ -43,7 +44,7 @@ int parse(){
   
   _d_t parsed;
   en_t my_entity = NULL;
-  en_c_t container =NULL;
+  en_c_t container = NULL;
   int i = 0; 
   char curr_char;
   char curr_word[128] ;
@@ -81,6 +82,11 @@ int parse(){
 
 	    datatypeparse();
 
+	    if(enumtypeparse() == 1){
+	      printf("EnumType File Not found !!!! \n\n\n\n");
+	      exit(0);
+	    }
+	    
 	    printf("********************************************\n");
 	    
 	    /* CALL THE GENERATORS HERE */
