@@ -22,7 +22,8 @@ class Testentity1Schema(Schema):
 	testentity = fields.Nested('TestentitySchema', exclude=('testentity1', ))
 
 class TestentitySchema(Schema):
-	attr1 = fields.Integer(required=True, validate=validate.Length(max=40))
+
+	TestEnum = fields.Str(validate=validate.OneOf(['MyEnum1','MyEnum2',]))
 	attr2 = fields.Str()
 	testentity1 = fields.Nested('Testentity1Schema', exclude=('testentity',))
 	testentity3s = fields.Nested('Testentity3Schema',many=True, exclude=('testentity',))

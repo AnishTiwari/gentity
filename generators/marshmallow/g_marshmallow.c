@@ -13,18 +13,20 @@
 #include "../../structure.h"
 #include "../../utility.h"
 #include "../../datatypeparser.h"
+
+#include "../../enumtypeparser.h"
 #include "./g_marshmallow_data_mapper.c"
 
-FILE *fp1;
+FILE *fp1_;
 
 int marshmallow_init_file(){
 
-  fp1 = fopen(MARSHMALLOW_TYPES_FILE_NAME, "w+");
+  fp1_ = fopen(MARSHMALLOW_TYPES_FILE_NAME, "w+");
 
-  if(fp1)
+  if(fp1_)
     {
-      fputs(_HEADER, fp1);
-      fclose(fp1);
+      fputs(_HEADER, fp1_);
+      fclose(fp1_);
       return 1;
     }
   else{
@@ -34,7 +36,7 @@ int marshmallow_init_file(){
 }
 
 /* actual writer method */
-void g_marshmallow(en_c_t container, dt_t dt){
+void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
 
   printf("%d is the total attributes found %s!!!\n",container->en_idx,dt->name);
 
@@ -54,44 +56,64 @@ void g_marshmallow(en_c_t container, dt_t dt){
     en_t my_entity = &container->entity[c_i];
     /* opening file in append mode */
 
-    fp1 = fopen(MARSHMALLOW_TYPES_FILE_NAME,"a+");
+    fp1_ = fopen(MARSHMALLOW_TYPES_FILE_NAME, "a+");
 
     char* temp_name = malloc(sizeof(char)* (strlen(my_entity->name) + 1 )) ;
     strcpy(temp_name, my_entity->name);
     to_upper(&temp_name[0]);
     
-    fprintf(fp1, "class %sSchema(Schema):\n",temp_name);
+    fprintf(fp1_, "class %sSchema(Schema):\n",temp_name);
     for(int i=0;i < my_entity->attributes->idx;i++){
       dt_t temp_dt =  find_key(my_entity->attributes->attribute[i].type, my_dt);
 
-	
-      char* got_basetype =  g_marshmallow_mapper(temp_dt->basetype);
-      if(my_entity->attributes->attribute[i].is_nullable == 0){
 
-	/* check if its contains rule */
-	if(dt->length ){
-	  fprintf(fp1, "\t%s = fields.%s(required=True, validate=validate.Length(max=%d))\n",my_entity->attributes->attribute[i].attr_name,got_basetype,dt->length);
- 
+      /* check if the attr is of type -ENUM */
+
+      if(strstr(my_entity->attributes->attribute[i].attr_name, "Enum") != NULL){
+	fprintf(fp1_, "\n\t%s = fields.Str(validate=validate.OneOf([", my_entity->attributes->attribute[i].attr_name);
+
+	  
+	ec_t key_enum_container = find_enum( my_entity->attributes->attribute[i].attr_name, ec);
+
+	
+	printf("!!!!!!!!!!!!!!!!FOUND: %s",key_enum_container->enum_name);
+	et_t key_enum = key_enum_container->enums;
+	while(key_enum != NULL){
+	  fprintf(fp1_,"'%s',", key_enum->value);
+	  key_enum = key_enum->next;
 	}
-	else{
-	  fprintf(fp1, "\t%s = fields.%s(required=True)\n",my_entity->attributes->attribute[i].attr_name,got_basetype);
-	}
+	fprintf(fp1_, "]))\n");
+	  
       }
       else{
-	
-	/* check if its contains rule */
-	if(dt->rule != NULL){
-	  fprintf(fp1, "\t%s = fields.%s(validate=validate.Length(max=%d))\n",my_entity->attributes->attribute[i].attr_name,got_basetype,dt->length);
+	char* got_basetype =  g_marshmallow_mapper(temp_dt->basetype);
+	if(my_entity->attributes->attribute[i].is_nullable == 0){
+
+	  if(dt->length ){
+	    fprintf(fp1_, "\t%s = fields.%s(required=True, validate=validate.Length(max=%d))\n",my_entity->attributes->attribute[i].attr_name,got_basetype,dt->length);
  
+	  }
+	  else{
+	    fprintf(fp1_, "\t%s = fields.%s(required=True)\n",my_entity->attributes->attribute[i].attr_name,got_basetype);
+	  }
 	}
-	else{
-	  fprintf(fp1, "\t%s = fields.%s()\n",my_entity->attributes->attribute[i].attr_name,got_basetype);
-	}
-      }
       
-    }
-    
-    /********  nested schemas ****************/
+	
+	else{
+	
+	  /* check if its contains rule */
+	  if(dt->rule != NULL){
+	    fprintf(fp1_, "\t%s = fields.%s(validate=validate.Length(max=%d))\n",my_entity->attributes->attribute[i].attr_name,got_basetype,dt->length);
+ 
+	  }
+	  else{
+	    fprintf(fp1_, "\t%s = fields.%s()\n",my_entity->attributes->attribute[i].attr_name,got_basetype);
+	  }
+	}
+      
+      }
+    }    
+    /* **********  nested schemas ****************/
 
     /*  1: if the current entity is parent to some other entity*/
     for(int child=0; child <= my_entity->size; child++){
@@ -104,7 +126,7 @@ void g_marshmallow(en_c_t container, dt_t dt){
     
 
 	  /* exclude necessary necessary to avoid self loop */
-	  fprintf(fp1, "\t%s = fields.Nested('%sSchema', exclude=('%s',))\n",container->entity[my_entity->relation[child]].name, temp_name1, my_entity->name);
+	  fprintf(fp1_, "\t%s = fields.Nested('%sSchema', exclude=('%s',))\n",container->entity[my_entity->relation[child]].name, temp_name1, my_entity->name);
 
 	  free(temp_name1);
 	}
@@ -119,16 +141,14 @@ void g_marshmallow(en_c_t container, dt_t dt){
 	  plural_child = malloc(sizeof(char) * strlen(t));
 	  strcpy(plural_child, t);
 	  pluralise_word(&plural_child[0]);
-	  printf("%s is pluralised word 9999999999\n", plural_child);
 	  
 	  char* temp_name2 = malloc(sizeof(char) * (strlen(t1))) ;
 	  strcpy(temp_name2, t1);
 	  to_upper(&temp_name2[0]);
 
-	  printf("%s is pluralised word 9999999999\n", plural_child);
 	  
     
-	  fprintf(fp1, "\t%s = fields.Nested('%sSchema',many=True, exclude=('%s',))\n",plural_child, temp_name2, my_entity->name);
+	  fprintf(fp1_, "\t%s = fields.Nested('%sSchema',many=True, exclude=('%s',))\n",plural_child, temp_name2, my_entity->name);
 	  
 	  free(plural_child);
 	}
@@ -146,7 +166,7 @@ void g_marshmallow(en_c_t container, dt_t dt){
 	  strcpy(temp_name1, my_entity->parent);
 	  to_upper(&temp_name1[0]);
     
-	  fprintf(fp1,"\n\t%s = fields.Nested('%sSchema', exclude=('%s', ))",my_entity->parent,temp_name1,my_entity->name);
+	  fprintf(fp1_,"\n\t%s = fields.Nested('%sSchema', exclude=('%s', ))",my_entity->parent,temp_name1,my_entity->name);
 
 	  free(temp_name1);
 	}
@@ -164,18 +184,21 @@ void g_marshmallow(en_c_t container, dt_t dt){
 	strcpy(temp_name1, my_entity->parent);
 	to_upper(&temp_name1[0]);
     
-	fprintf(fp1,"\n\t%s = fields.Nested('%sSchema', many=True, exclude=('%s', ))",plural_child, temp_name1, my_entity->name);
+	fprintf(fp1_,"\n\t%s = fields.Nested('%sSchema', many=True, exclude=('%s', ))",plural_child, temp_name1, my_entity->name);
 
 	free(temp_name1);
       }
       
     }
-      
-    fprintf(fp1, "\n\n");
-    fclose(fp1);
+
+     
+    
+    fprintf(fp1_, "\n\n");
+    fclose(fp1_); 
   
   }
+    
   
-}
 
+}
 #endif

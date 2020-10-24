@@ -4,7 +4,9 @@
 
 
 
-testentity4_testentity = db.table("testentity4_testentity",
+class TestEnum:
+	MyEnum1!testentity4_testentity = db.table("class TestEnum:
+	MyEnum1!testentity4_testentity",
 	db.Column("testentity_id", db.Integer, db.ForeignKey("testentity.id")),
 	db.Column("testentity4_id", db.Integer, db.ForeignKey("testentity4.id")))
 
@@ -12,8 +14,7 @@ testentity4_testentity = db.table("testentity4_testentity",
 # testdesc
 class Testentity(db.Model):
 	__tablename__ = 'testentity'
-	#attrdesc1
-	attr1 = db.Column(db.Integer, nullable=False)
+	TestEnum = db.Column(db.Enum(TestEnum))
 	#attrdesc2
 	attr2 = db.Column(db.String(40))
 	testentity1 = db.relationship("Testentity1", backref="testentity" ,uselist=False)

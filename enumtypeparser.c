@@ -1,19 +1,19 @@
 #include "./enumtypeparser.h"
 
+
 et_t prev_ = NULL;
 
 
 void add_new_enum(ec_t ec_ ) {
-  printf("%s\n", ec_->enum_name);
+  printf("Adding Enum %s to UTHASH\n", ec_->enum_name);
   HASH_ADD_STR( s1, enum_name, ec_ );
 }
 
-ec_t find_enum( char* key, ec_t ec ){
-  HASH_FIND_STR(s1, key, ec);
-  if(ec){
-    printf("\n \n finding for length \n\n");
+ec_t find_enum( char* key, ec_t ec_ ){
+  HASH_FIND_STR(s1, key, ec_);
+  if(ec_){
     ec_t temp_ec;
-    temp_ec = ec;
+    temp_ec = ec_;
     return temp_ec;
   }
   else{
@@ -29,6 +29,29 @@ void print_enums() {
     printf("Val is %s\n", ss->enum_name);
   }
 }
+
+/* util for writing to enum classes */
+void write_enum_class(){
+  ec_t ss;
+
+  FILE* fp ;
+
+  fp = fopen(ENUM_CLASS_FILE, "w+");
+
+  for(ss=s1; ss != NULL; ss=ss->hh.next) {
+    fprintf(fp, "class %s:\n", ss->enum_name);
+    et_t temp_et = ss->enums;
+    while(temp_et != NULL){
+      fprintf(fp, "\t%s = '%s'\n", temp_et->value, temp_et->value);
+      temp_et = temp_et->next;
+    }
+    fprintf(fp, "\n\n");
+    
+  }
+  fclose(fp);
+  printf("WRITTEN: Enum classes\n");
+}
+
 /* end of uthash lib fns: */
 
 
@@ -73,11 +96,10 @@ int enumtypeparse(){
 	    my_ec->enums = my_et;
 	    add_new_enum(my_ec);
 
-	      }
-
+	  }
 
 	  else if( (strstr(curr_word, "EnumType") != NULL)){
-	     my_ec   = malloc(sizeof(ec));
+	    my_ec   = malloc(sizeof(ec));
 	    
 	  }
 
@@ -112,7 +134,6 @@ int enumtypeparse(){
 		  my_et->value = malloc(sizeof(char) * strlen(sanitised_value));
 		  strcpy(my_et->value, sanitised_value);
 
-		  printf("%s______________________\n", sanitised_value);
 		  /* assign the pointer to next enum */
 		  my_et->next = prev_;
 		  prev_ = my_et;	  

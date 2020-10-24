@@ -14,6 +14,8 @@
 #include "../utility.h"
 #include "../datatypeparser.h"
 #include "./g_data_mapper.c"
+#include "../enumtypeparser.h"
+
 
 FILE *fp1;
 
@@ -54,7 +56,6 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
     /* opening file in append mode */
     fp1 = fopen( SQL_ALCHEMY_FILE_NAME,"a+");
   
-    /* printf("%s\n",_HEADER); */
     int special = 0;
     printf("%d is the persistent value for the entity",my_entity->persistent);
     if(my_entity->persistent == 1){ 
@@ -79,7 +80,7 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	      strcat(assoc_entity,caps_1);
 
 	      strcat(assoc_entity, "_");
-	      free(caps_1);
+	     
 	      caps_1 = malloc(sizeof(char) * (strlen(my_entity->name)));
 	      strcpy( caps_1 ,my_entity->name);
 	   
@@ -110,44 +111,61 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 
       /* assigning the attribute values to class model attribute */
       for(int i=0;i < my_entity->attributes->idx;i++){
-      
-	dt_t temp_dt =  find_key(my_entity->attributes->attribute[i].type, my_dt);
 
-	if(my_entity->attributes->attribute[i].attr_description != NULL){
-	  fprintf(fp1, "\n\t#%s",my_entity->attributes->attribute[i].attr_description);
+	/* check if the attr is of type -ENUM */
+
+	if(strstr(my_entity->attributes->attribute[i].attr_name, "Enum") != NULL){
+	  fprintf(fp1, "\n\t%s = db.Column(db.Enum(%s))", my_entity->attributes->attribute[i].attr_name, my_entity->attributes->attribute[i].attr_name);
+
+	  /* ec_t temp_ec =  find_enum(my_entity->attributes->attribute[i].type, my_ec); */
+
+	  /* et_t temp_et = temp_ec->enums; */
+	  /* et_t temp_et_ptr = temp_et; */
+	  /* while(temp_et_ptr->next != NULL){ */
+	  /*   fprintf(fp1, "\t%s = db.Column('%s', db.Enum(\n", temp_et->value); */
+	  /*   temp_et_ptr = temp_et_ptr->next; */
+	  /* } */
+	  
 	}
-	/* calling the g_mapper fn to map the correct datatype name
-	 * :: if basetype got from g_mapper is string then put the
-	 *     string length eg: string(20) if length=20
-	 * :: else no need to do anything just write the basetype
-	 */
-	char* got_basetype =  g_mapper(temp_dt->basetype);
-	if(my_entity->attributes->attribute[i].is_nullable == 0)
-	  {
-	    if(strcmp("String", got_basetype) == 0){
+	else{
+	  dt_t temp_dt =  find_key(my_entity->attributes->attribute[i].type, my_dt);
+
+	  if(my_entity->attributes->attribute[i].attr_description != NULL){
+	    fprintf(fp1, "\n\t#%s",my_entity->attributes->attribute[i].attr_description);
+
+	  }
+	  /* calling the g_mapper fn to map the correct datatype name
+	   * :: if basetype got from g_mapper is string then put the
+	   *     string length eg: string(20) if length=20
+	   * :: else no need to do anything just write the basetype
+	   */
+	  char* got_basetype =  g_mapper(temp_dt->basetype);
+	  if(my_entity->attributes->attribute[i].is_nullable == 0)
+	    {
+	      if(strcmp("String", got_basetype) == 0){
 	    
-	      fprintf(fp1, "\n\t%s = db.Column(db.%s(%d), nullable=False)", my_entity->attributes->attribute[i].attr_name,got_basetype, find_key(my_dt->name,  dt)->length);
+		fprintf(fp1, "\n\t%s = db.Column(db.%s(%d), nullable=False)", my_entity->attributes->attribute[i].attr_name,got_basetype, find_key(my_dt->name,  dt)->length);
+	      }
+	      else
+		{
+		  fprintf(fp1, "\n\t%s = db.Column(db.%s, nullable=False)", my_entity->attributes->attribute[i].attr_name,got_basetype);
+		}
+
+	    }
+	  else{
+
+	    if(strcmp("String", got_basetype) == 0){
+	      fprintf(fp1, "\n\t%s = db.Column(db.%s(%d))", my_entity->attributes->attribute[i].attr_name,got_basetype,  find_key(my_dt->name,  dt)->length);
 	    }
 	    else
 	      {
-		fprintf(fp1, "\n\t%s = db.Column(db.%s, nullable=False)", my_entity->attributes->attribute[i].attr_name,got_basetype);
+		fprintf(fp1, "\n\t%s = db.Column(db.%s)", my_entity->attributes->attribute[i].attr_name,got_basetype);
 	      }
 
-	  }
-	else{
-
-	  if(strcmp("String", got_basetype) == 0){
-	    fprintf(fp1, "\n\t%s = db.Column(db.%s(%d))", my_entity->attributes->attribute[i].attr_name,got_basetype,  find_key(my_dt->name,  dt)->length);
-	  }
-	  else
-	    {
-	      fprintf(fp1, "\n\t%s = db.Column(db.%s)", my_entity->attributes->attribute[i].attr_name,got_basetype);
-	    }
-
 	
+	  }
 	}
       }
-    
   
       /* add relationship when parent, parent_relation are set in entitytypes.xml */
       if(my_entity->parent != NULL){

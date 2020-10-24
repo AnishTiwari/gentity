@@ -86,16 +86,14 @@ int parse(){
 	      printf("EnumType File Not found !!!! \n\n\n\n");
 	      exit(0);
 	    }
-	    
+
 	    printf("********************************************\n");
 	    
 	    /* CALL THE GENERATORS HERE */
 
-	    
+	    write_enum_class();   
 	    g_sql_alchemy(container, my_dt);
-	    g_marshmallow(container, my_dt);
-	    
-
+	    g_marshmallow(container, my_dt, my_ec);
 	    
 	  }
 	  else  if(strstr(curr_word, "Entity.Attributes") != NULL){
@@ -186,7 +184,7 @@ int parse(){
 		}
 		else if(strcmp(parsed->key, "AttrName") == 0){
 		  /* making the nullable flag false by default here */
-		my_entity->attributes->attribute[my_entity->attributes->idx].is_nullable = 1;
+		  my_entity->attributes->attribute[my_entity->attributes->idx].is_nullable = 1;
  
 		  my_entity->attributes->attribute[my_entity->attributes->idx].attr_name = malloc(sizeof(strlen(sanitised_value)) +1 );
 		  strcpy(my_entity->attributes->attribute[my_entity->attributes->idx].attr_name , sanitised_value);
@@ -228,9 +226,9 @@ int parse(){
 	    if(parsed->end){
   
 	      /*
-		 1) assign the attribute,
-		 2) allocate a new attribute struct memory for ++idx 
-		 3) free & create a new my_attr
+		1) assign the attribute,
+		2) allocate a new attribute struct memory for ++idx 
+		3) free & create a new my_attr
 	      */
 	      my_entity->attributes->idx++;		
 	      my_entity->attributes->attribute = realloc(my_entity->attributes->attribute,sizeof(attr) * ((my_entity->attributes->idx)+1));

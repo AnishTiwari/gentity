@@ -12,6 +12,8 @@
 
 #define ENUMTYPE_FILE "./resources/enumtypes.xml"
 
+#define ENUM_CLASS_FILE "./outputs/enums.py"
+
 
 ec_t my_ec, s1 ;
 _d_t parsed;

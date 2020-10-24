@@ -1,7 +1,7 @@
 <Container>
   <Entity Description="testdesc" Persistent="True" Name="testentity">
     <Entity.Attributes>
-      <Attribute AttrDescription="attrdesc1" AttrName="attr1"  Type="DummyInt" Nullable="False"  />
+      <Attribute AttrDescription="attrdesc1" AttrName="TestEnum"  Type="DummyString" Nullable="False"  />
       <Attribute AttrDescription="attrdesc2" Type="DummyString"   AttrName="attr2" />
     </Entity.Attributes> 
   </Entity> 
