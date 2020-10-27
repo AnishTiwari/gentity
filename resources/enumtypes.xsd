@@ -1,4 +1,8 @@
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<?xml version="1.0" encoding="utf-8"?>
+
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://www.w3.org/2001/XMLSchema enumtypes.xsd">
   <xs:element name="EnumTypes">
     <xs:complexType>
       <xs:sequence>
@@ -9,7 +13,7 @@
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
-                      <xs:attribute type="xs:string" name="Value" use="optional"/>
+                      <xs:attribute type="xs:string" name="Value" />
                     </xs:extension>
                   </xs:simpleContent>
                 </xs:complexType>

@@ -42,7 +42,7 @@ int datatypeparse(){
 
   if( !fp ){
     perror("No such file or content found !!\n");
-    return 0;
+    return 1;
   }
 
   int i = 0; 

@@ -34,33 +34,32 @@ void print_enums() {
 void write_enum_class(){
   ec_t ss;
 
-  FILE* fp ;
+  FILE* fp_e ;
 
-  fp = fopen(ENUM_CLASS_FILE, "w+");
+  fp_e = fopen(ENUM_CLASS_FILE, "w+");
 
   for(ss=s1; ss != NULL; ss=ss->hh.next) {
-    fprintf(fp, "class %s:\n", ss->enum_name);
+    fprintf(fp_e, "class %s:\n", ss->enum_name);
     et_t temp_et = ss->enums;
     while(temp_et != NULL){
-      fprintf(fp, "\t%s = '%s'\n", temp_et->value, temp_et->value);
+      fprintf(fp_e, "\t%s = '%s'\n", temp_et->value, temp_et->value);
       temp_et = temp_et->next;
     }
-    fprintf(fp, "\n\n");
+    fprintf(fp_e, "\n\n");
     
   }
-  fclose(fp);
+  fclose(fp_e);
   printf("WRITTEN: Enum classes\n");
 }
 
 /* end of uthash lib fns: */
 
-
 int enumtypeparse(){
 
-  FILE *fp;
-  fp = fopen(ENUMTYPE_FILE, "r");
+  FILE * fp_ep;
+  fp_ep = fopen(ENUMTYPE_FILE, "r");
 
-  if( !fp ){
+  if( !fp_ep ){
     perror("No such file or content found !!\n");
     return 1;
   }
@@ -69,7 +68,7 @@ int enumtypeparse(){
   char curr_char;
   char curr_word[108] ;
 
-  while((curr_char = fgetc(fp)) != EOF ){
+  while((curr_char = fgetc(fp_ep)) != EOF ){
 
     if(curr_char != ' ' ){
       curr_word[i++] = curr_char;
@@ -99,17 +98,16 @@ int enumtypeparse(){
 	  }
 
 	  else if( (strstr(curr_word, "EnumType") != NULL)){
-	    my_ec   = malloc(sizeof(ec));
+	    my_ec = malloc(sizeof(ec));
 	    
 	  }
 
 	  else if(strstr(curr_word, "EnumVal" ) != NULL){
-	    my_et   = malloc(sizeof(et));
+	    my_et  = malloc(sizeof(et));
 	     
 	  }
 	  
 	  else{
-	    printf("ENTERED: %s \n\n", curr_word);	    
 	    parsed = split(curr_word);
 	   
 	    if(parsed != NULL && parsed->key != NULL && parsed->value != NULL)

@@ -1,26 +1,44 @@
 <Container>
-  <Entity Description="testdesc" Persistent="True" Name="testentity">
-    <Entity.Attributes>
-      <Attribute AttrDescription="attrdesc1" AttrName="TestEnum"  Type="DummyString" Nullable="False"  />
-      <Attribute AttrDescription="attrdesc2" Type="DummyString"   AttrName="attr2" />
-    </Entity.Attributes> 
-  </Entity> 
-  <Entity Description="testdesc1" Persistent="True" Name="testentity1" Parent="testentity" ParentRelation="OneToOne" >
-    <Entity.Attributes>
-      <Attribute AttrDescription="attrdesc11" AttrName="attr11" Type="DummyInt" />
-      <Attribute AttrDescription="attrdesc21" Type="DummyInt"  AttrName="attr21" />
-    </Entity.Attributes> 
-  </Entity>
-  <Entity Description="testdesc3" Persistent="True" Name="testentity3" Parent="testentity" ParentRelation="OneToMany" >
-    <Entity.Attributes>
-      <Attribute AttrDescription="attrdesc112" AttrName="attr121" Type="DummyString"  />
-      <Attribute AttrDescription="attrdesc221" Type="DummyString"  AttrName="attr212" />
-    </Entity.Attributes> 
-  </Entity> 
-  <Entity Description="testdesc4" Persistent="True" Name="testentity4" Parent="testentity" ParentRelation="ManyToMany" >
-    <Entity.Attributes>
-      <Attribute AttrDescription="attrdesc112" AttrName="attr121" Type="DummyInt" />
-      <Attribute AttrDescription="attrdesc221" Type="DummyString"  AttrName="attr212"  />
-    </Entity.Attributes> 
-  </Entity>          
+
+    <Entity Name="course">
+        <Entity.Attributes>
+            <Attribute AttrName="course_name" Type="DummyString" />
+            <Attribute AttrName="course_code" Type="DummyString" />
+
+        </Entity.Attributes>
+    </Entity>
+
+  <Entity Name="user" Parent="course" ParentRelation="ManyToMany" >
+        <Entity.Attributes>
+            <Attribute AttrName="ukey" Type="DummyString" />
+            <Attribute AttrName="display_name" Type="DummyString" />
+            <Attribute AttrName="pub_key" Type="DummyString" />
+            <Attribute AttrName="sign_count" Type="DummyInteger" />
+            <Attribute AttrName="username" Type="DummyString" />
+            <Attribute AttrName="email_id" Type="DummyString" />
+            <Attribute AttrName="roll_no" Type="DummyInteger" />
+            <Attribute AttrName="rp_id" Type="DummyString" />
+            <Attribute AttrName="icon_url" Type="DummyString" />
+        </Entity.Attributes>
+    </Entity>
+
+
+    <Entity Name="staff">
+        <Entity.Attributes>
+            <Attribute AttrName="staff_name" Type="DummyString" />
+            <Attribute AttrName="staff_id_no" Type="DummyInteger" />
+
+        </Entity.Attributes>
+    </Entity>
+    
+    <Entity Name="attendance">
+        <Entity.Attributes> 
+            <Attribute AttrName="staff_id" Type="DummyInteger" />
+            <Attribute AttrName="roll_no" Type="DummyInteger" />
+            <Attribute AttrName="period" Type="DummyInteger" />
+            <Attribute AttrName="is_present" Type="Bool" />
+            <Attribute AttrName="is_fingerprint" Type="Bool" />
+            <Attribute AttrName="logged_time" Type="DateTime" />
+        </Entity.Attributes> 
+    </Entity> 
 </Container> 

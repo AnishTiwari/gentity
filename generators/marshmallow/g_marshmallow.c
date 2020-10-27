@@ -63,6 +63,11 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
     to_upper(&temp_name[0]);
     
     fprintf(fp1_, "class %sSchema(Schema):\n", temp_name);
+
+    /* creating dump only primary key id field only if persistent is true */
+    if(my_entity->persistent == 1){
+      fprintf(fp1_, "\tid = fields.Int(dump_only=True)\n");
+    }
     for(int i=0;i < my_entity->attributes->idx;i++){
       dt_t temp_dt =  find_key(my_entity->attributes->attribute[i].type, my_dt);
 

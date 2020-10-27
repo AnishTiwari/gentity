@@ -3,29 +3,42 @@
 
 
 
-class Testentity4Schema(Schema):
-	attr121 = fields.Integer()
-	attr212 = fields.Str()
+class AttendanceSchema(Schema):
+	id = fields.Int(dump_only=True)
+	staff_id = fields.Integer()
+	roll_no = fields.Integer()
+	period = fields.Integer()
+	is_present = fields.Bool()
+	is_fingerprint = fields.Bool()
+	logged_time = fields.DateTime()
 
-	testentities = fields.Nested('TestentitySchema', many=True, exclude=('testentity4', ))
 
-class Testentity3Schema(Schema):
-	attr121 = fields.Str()
-	attr212 = fields.Str()
 
-	testentity = fields.Nested('TestentitySchema', exclude=('testentity3', ))
+class StaffSchema(Schema):
+	id = fields.Int(dump_only=True)
+	staff_name = fields.Str()
+	staff_id_no = fields.Integer()
 
-class Testentity1Schema(Schema):
-	attr11 = fields.Integer()
-	attr21 = fields.Integer()
 
-	testentity = fields.Nested('TestentitySchema', exclude=('testentity1', ))
 
-class TestentitySchema(Schema):
+class UserSchema(Schema):
+	id = fields.Int(dump_only=True)
+	ukey = fields.Str()
+	display_name = fields.Str()
+	pub_key = fields.Str()
+	sign_count = fields.Integer()
+	username = fields.Str()
+	email_id = fields.Str()
+	roll_no = fields.Integer()
+	rp_id = fields.Str()
+	icon_url = fields.Str()
+	courses = fields.Nested('CourseSchema', many=True, exclude=('user', ))
 
-	TestEnum = fields.Str(validate=validate.OneOf(['MyEnum1','MyEnum2',]))
-	attr2 = fields.Str()
-	testentity1 = fields.Nested('Testentity1Schema', exclude=('testentity',))
-	testentity3s = fields.Nested('Testentity3Schema',many=True, exclude=('testentity',))
+
+class CourseSchema(Schema):
+	id = fields.Int(dump_only=True)
+	course_name = fields.Str()
+	course_code = fields.Str()
+
 
 

@@ -4,53 +4,47 @@
 
 
 
-class TestEnum:
-	MyEnum1!testentity4_testentity = db.table("class TestEnum:
-	MyEnum1!testentity4_testentity",
-	db.Column("testentity_id", db.Integer, db.ForeignKey("testentity.id")),
-	db.Column("testentity4_id", db.Integer, db.ForeignKey("testentity4.id")))
+user_course = db.Table("user_course",
+	db.Column("course_id", db.Integer, db.ForeignKey("course.id")),
+	db.Column("user_id", db.Integer, db.ForeignKey("user.id")))
+
+class Course(db.Model):
+	__tablename__ = 'course'
+	id = db.Column(db.Integer, primary_key=True)
+	course_name = db.Column(db.String(40))
+	course_code = db.Column(db.String(40))
+	users = db.relationship("User", secondary=user_course, backref=db.backrefs("courses") )
 
 
-# testdesc
-class Testentity(db.Model):
-	__tablename__ = 'testentity'
-	TestEnum = db.Column(db.Enum(TestEnum))
-	#attrdesc2
-	attr2 = db.Column(db.String(40))
-	testentity1 = db.relationship("Testentity1", backref="testentity" ,uselist=False)
-	testentity3s = db.relationship("Testentity3", backref="testentity")
-	testentity4s = db.relationship("Testentity4", secondary=testentity4_testentity, backref=db.backrefs("testentity4_testentity") )
+class User(db.Model):
+	__tablename__ = 'user'
+	id = db.Column(db.Integer, primary_key=True)
+	ukey = db.Column(db.String(40))
+	display_name = db.Column(db.String(40))
+	pub_key = db.Column(db.String(40))
+	sign_count = db.Column(db.Integer)
+	username = db.Column(db.String(40))
+	email_id = db.Column(db.String(40))
+	roll_no = db.Column(db.Integer)
+	rp_id = db.Column(db.String(40))
+	icon_url = db.Column(db.String(40))
 
 
-
-# testdesc1
-class Testentity1(db.Model):
-	__tablename__ = 'testentity1'
-	#attrdesc11
-	attr11 = db.Column(db.Integer)
-	#attrdesc21
-	attr21 = db.Column(db.Integer)
-	testentity_id = db.Column(db.Integer,db.ForeignKey('testentity.id'), unique=True)
+class Staff(db.Model):
+	__tablename__ = 'staff'
+	id = db.Column(db.Integer, primary_key=True)
+	staff_name = db.Column(db.String(40))
+	staff_id_no = db.Column(db.Integer)
 
 
-
-# testdesc3
-class Testentity3(db.Model):
-	__tablename__ = 'testentity3'
-	#attrdesc112
-	attr121 = db.Column(db.String(40))
-	#attrdesc221
-	attr212 = db.Column(db.String(40))
-	testentity_id = db.Column(db.Integer,db.ForeignKey('testentity.id'))
-
-
-
-# testdesc4
-class Testentity4(db.Model):
-	__tablename__ = 'testentity4'
-	#attrdesc112
-	attr121 = db.Column(db.Integer)
-	#attrdesc221
-	attr212 = db.Column(db.String(40))
+class Attendance(db.Model):
+	__tablename__ = 'attendance'
+	id = db.Column(db.Integer, primary_key=True)
+	staff_id = db.Column(db.Integer)
+	roll_no = db.Column(db.Integer)
+	period = db.Column(db.Integer)
+	is_present = db.Column(db.Boolean)
+	is_fingerprint = db.Column(db.Boolean)
+	logged_time = db.Column(db.DateTime)
 
 

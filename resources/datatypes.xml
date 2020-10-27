@@ -1,4 +1,6 @@
 <DataTypes>
-  <DataType BaseType="Integer" Name="DummyInt" Length="1000" /> 
+  <DataType BaseType="Integer" Name="DummyInteger" Length="1000" /> 
   <DataType BaseType="String" Length="40" Name="DummyString" /> 
+  <DataType BaseType="Bool" Length="40" Name="Bool" />
+   <DataType BaseType="DateTime" Length="40" Name="DateTime" /> 
 </DataTypes> 

@@ -80,7 +80,10 @@ int parse(){
 
 	    /* calling the datatype parser here and printing the parsed datatyes  */
 
-	    datatypeparse();
+	    if(datatypeparse() == 1){
+	      printf("DataType File Not found !!!! \n\n\n\n");
+	      exit(0);
+	    }
 
 	    if(enumtypeparse() == 1){
 	      printf("EnumType File Not found !!!! \n\n\n\n");
@@ -90,10 +93,10 @@ int parse(){
 	    printf("********************************************\n");
 	    
 	    /* CALL THE GENERATORS HERE */
-
-	    write_enum_class();   
 	    g_sql_alchemy(container, my_dt);
 	    g_marshmallow(container, my_dt, my_ec);
+
+	    write_enum_class();
 	    
 	  }
 	  else  if(strstr(curr_word, "Entity.Attributes") != NULL){
@@ -150,6 +153,8 @@ int parse(){
 		if(strcmp(parsed->key, "Name") == 0){
 		  my_entity->name  =(char *) malloc(sizeof(strlen(sanitised_value)) + 1);
 		  strcpy(my_entity->name , sanitised_value);
+
+		  my_entity->persistent = 1;
 		}
 
 		else if(strcmp(parsed->key, "Description") == 0){
@@ -216,11 +221,16 @@ int parse(){
 
 		/* persistent or non persistent */
 		else{
-		  if(strcmp(parsed->value ,"\"True\"") == 0)
-		    my_entity->persistent = 1;
-		  else
-		    my_entity->persistent =0;
+
+
+		  if(strcmp(parsed->key, "Persistent") == 0){		  
+		    if(strcmp(parsed->value ,"\"False\"") == 0)
+		      my_entity->persistent = 0;
+		    else
+		      my_entity->persistent =1;
+		  }
 		}
+		
 
 	      }
 	    if(parsed->end){

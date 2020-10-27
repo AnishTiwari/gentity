@@ -87,17 +87,16 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	      /* to_upper(&caps_1[0]); */
 	      strcat(assoc_entity,caps_1);
  
-	  
-	      fprintf(fp1,"\n%s = db.table(\"%s\",\n\tdb.Column(\"%s_id\", db.Integer, db.ForeignKey(\"%s.id\")),\n\tdb.Column(\"%s_id\", db.Integer, db.ForeignKey(\"%s.id\")))", assoc_entity,assoc_entity,my_entity->name, my_entity->name, container->entity[my_entity->relation[rel_idx]].name,container->entity[my_entity->relation[rel_idx]].name );
+	      fprintf(fp1, "\n%s = db.Table(\"%s\",\n\tdb.Column(\"%s_id\", db.Integer, db.ForeignKey(\"%s.id\")),\n\tdb.Column(\"%s_id\", db.Integer, db.ForeignKey(\"%s.id\")))", assoc_entity,assoc_entity,my_entity->name, my_entity->name, container->entity[my_entity->relation[rel_idx]].name,container->entity[my_entity->relation[rel_idx]].name );
 
 	      free(assoc_entity);
 	      free(caps_1);
 	      special = 1;
 	      fputs("\n\n",fp1);
 	    }
-
-	
+	  
 	}
+	
       }	  
       if(my_entity->description != NULL){
 	fprintf(fp1,"\n# %s\n",my_entity->description);
@@ -109,6 +108,11 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
   
       fprintf(fp1, "\t__tablename__ = '%s'", my_entity->name);
 
+      /* Auto generating Id primary key value */
+
+      fprintf(fp1, "\n\tid = db.Column(db.Integer, primary_key=True)");
+
+      
       /* assigning the attribute values to class model attribute */
       for(int i=0;i < my_entity->attributes->idx;i++){
 
@@ -117,14 +121,6 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	if(strstr(my_entity->attributes->attribute[i].attr_name, "Enum") != NULL){
 	  fprintf(fp1, "\n\t%s = db.Column(db.Enum(%s))", my_entity->attributes->attribute[i].attr_name, my_entity->attributes->attribute[i].attr_name);
 
-	  /* ec_t temp_ec =  find_enum(my_entity->attributes->attribute[i].type, my_ec); */
-
-	  /* et_t temp_et = temp_ec->enums; */
-	  /* et_t temp_et_ptr = temp_et; */
-	  /* while(temp_et_ptr->next != NULL){ */
-	  /*   fprintf(fp1, "\t%s = db.Column('%s', db.Enum(\n", temp_et->value); */
-	  /*   temp_et_ptr = temp_et_ptr->next; */
-	  /* } */
 	  
 	}
 	else{
@@ -134,11 +130,13 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	    fprintf(fp1, "\n\t#%s",my_entity->attributes->attribute[i].attr_description);
 
 	  }
+
 	  /* calling the g_mapper fn to map the correct datatype name
 	   * :: if basetype got from g_mapper is string then put the
 	   *     string length eg: string(20) if length=20
 	   * :: else no need to do anything just write the basetype
 	   */
+
 	  char* got_basetype =  g_mapper(temp_dt->basetype);
 	  if(my_entity->attributes->attribute[i].is_nullable == 0)
 	    {
@@ -161,7 +159,6 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	      {
 		fprintf(fp1, "\n\t%s = db.Column(db.%s)", my_entity->attributes->attribute[i].attr_name,got_basetype);
 	      }
-
 	
 	  }
 	}
@@ -249,12 +246,21 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	      plural_child=malloc(sizeof(char) * strlen(container->entity[my_entity->relation[rel_idx]].name));
 	      strcpy(plural_child , container->entity[my_entity->relation[rel_idx]].name);
 	      pluralise_word(&plural_child[0]);
-	      fprintf(fp1, "\n\t%s = db.relationship(\"%s\", secondary=%s, backref=db.backrefs(\"%s\") )",plural_child, caps_1, assoc_entity,assoc_entity);
 
+
+	      char* plural_backref_parent;
+	      plural_backref_parent = malloc(sizeof(char) * strlen(my_entity->name));
+	      strcpy(plural_backref_parent , my_entity->name);
+	      pluralise_word(&plural_backref_parent[0]);
+
+ 
+	      
+	      fprintf(fp1, "\n\t%s = db.relationship(\"%s\", secondary=%s, backref=db.backrefs(\"%s\") )",plural_child, caps_1, assoc_entity, plural_backref_parent);
 
 	      free(assoc_entity);
 	      free(caps_1);
 	      free(caps_2);
+	      free(plural_backref_parent);
 	      free(plural_child);
 	    }
 	  }
@@ -263,8 +269,7 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
       
       }
 
-      fputs("\n\n\n",fp1);
-  
+      fputs("\n\n\n",fp1);  
       fclose(fp1);
     }
   } /* end of for */
