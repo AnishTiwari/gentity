@@ -18,7 +18,7 @@ class StaffSchema(Schema):
 	id = fields.Int(dump_only=True)
 	staff_name = fields.Str()
 	staff_id_no = fields.Integer()
-
+	courses = fields.Nested('CourseSchema', many=True, exclude=('staff', ))
 
 
 class UserSchema(Schema):

@@ -4,7 +4,6 @@
         <Entity.Attributes>
             <Attribute AttrName="course_name" Type="DummyString" />
             <Attribute AttrName="course_code" Type="DummyString" />
-
         </Entity.Attributes>
     </Entity>
 
@@ -23,7 +22,7 @@
     </Entity>
 
 
-    <Entity Name="staff">
+    <Entity Name="staff" Parent="course" ParentRelation="ManyToMany" >
         <Entity.Attributes>
             <Attribute AttrName="staff_name" Type="DummyString" />
             <Attribute AttrName="staff_id_no" Type="DummyInteger" />

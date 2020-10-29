@@ -62,15 +62,17 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 
       if(my_entity->size >= 0 ){
 
+		      char* caps_1 ;
+	      char* assoc_entity;
+
 	for(int rel_idx =0; rel_idx <= my_entity->size; rel_idx ++){
 
 	  /* Association table creation */
 	  if(strcmp(container->entity[my_entity->relation[rel_idx]].parent_relation, "ManyToMany") == 0)
 	    {
 	
-	      char* assoc_entity;
-	      assoc_entity = malloc(sizeof(char) * (strlen(container->entity[my_entity->relation[rel_idx]].name)+strlen(my_entity->name))+1);
-	      char* caps_1 ;
+	      assoc_entity = malloc(sizeof(char) * (strlen(container->entity[my_entity->relation[rel_idx]].name) + strlen(my_entity->name) +1));
+
 	      caps_1 = malloc(sizeof(char) * (strlen(container->entity[my_entity->relation[rel_idx]].name)) +1);
 	      strcpy( caps_1 ,container->entity[my_entity->relation[rel_idx]].name);
 	      /* to_upper(&caps_1[0]); */
@@ -86,11 +88,11 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	   
 	      /* to_upper(&caps_1[0]); */
 	      strcat(assoc_entity,caps_1);
- 
+
 	      fprintf(fp1, "\n%s = db.Table(\"%s\",\n\tdb.Column(\"%s_id\", db.Integer, db.ForeignKey(\"%s.id\")),\n\tdb.Column(\"%s_id\", db.Integer, db.ForeignKey(\"%s.id\")))", assoc_entity,assoc_entity,my_entity->name, my_entity->name, container->entity[my_entity->relation[rel_idx]].name,container->entity[my_entity->relation[rel_idx]].name );
 
-	      free(assoc_entity);
-	      free(caps_1);
+	      /* free(assoc_entity); */
+	      /* free(caps_1); */
 	      special = 1;
 	      fputs("\n\n",fp1);
 	    }
