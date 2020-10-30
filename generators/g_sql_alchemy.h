@@ -257,7 +257,7 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 
  
 	      
-	      fprintf(fp1, "\n\t%s = db.relationship(\"%s\", secondary=%s, backref=db.backrefs(\"%s\") )",plural_child, caps_1, assoc_entity, plural_backref_parent);
+	      fprintf(fp1, "\n\t%s = db.relationship(\"%s\", secondary=%s, backref=db.backref(\"%s\") )",plural_child, caps_1, assoc_entity, plural_backref_parent);
 
 	      free(assoc_entity);
 	      free(caps_1);

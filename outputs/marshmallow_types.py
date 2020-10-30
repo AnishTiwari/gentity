@@ -3,6 +3,13 @@
 
 
 
+class ScheduleSchema(Schema):
+	id = fields.Int(dump_only=True)
+	day = fields.Integer()
+	period = fields.Integer()
+	courses = fields.Nested('CourseSchema', many=True, exclude=('schedules', ))
+
+
 class AttendanceSchema(Schema):
 	id = fields.Int(dump_only=True)
 	staff_id = fields.Integer()
@@ -18,7 +25,7 @@ class StaffSchema(Schema):
 	id = fields.Int(dump_only=True)
 	staff_name = fields.Str()
 	staff_id_no = fields.Integer()
-	courses = fields.Nested('CourseSchema', many=True, exclude=('staff', ))
+	courses = fields.Nested('CourseSchema', many=True, exclude=('staffs', ))
 
 
 class UserSchema(Schema):
@@ -32,7 +39,7 @@ class UserSchema(Schema):
 	roll_no = fields.Integer()
 	rp_id = fields.Str()
 	icon_url = fields.Str()
-	courses = fields.Nested('CourseSchema', many=True, exclude=('user', ))
+	courses = fields.Nested('CourseSchema', many=True, exclude=('users', ))
 
 
 class CourseSchema(Schema):

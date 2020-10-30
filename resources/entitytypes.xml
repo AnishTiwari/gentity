@@ -40,4 +40,12 @@
             <Attribute AttrName="logged_time" Type="DateTime" />
         </Entity.Attributes> 
     </Entity> 
+
+    <Entity Name="schedule" Parent="course" ParentRelation="ManyToMany" >
+        <Entity.Attributes>
+            <Attribute AttrName="day" Type="DummyInteger" />
+            <Attribute AttrName="period" Type="DummyInteger" />
+        </Entity.Attributes>
+    </Entity> 
+
 </Container> 

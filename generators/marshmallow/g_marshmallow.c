@@ -141,12 +141,19 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
 	  plural_child = malloc(sizeof(char) * strlen(t));
 	  strcpy(plural_child, t);
 	  pluralise_word(&plural_child[0]);
+
+
+	  char* self = my_entity->name;
+	   char* plural_self;
+	  plural_self = malloc(sizeof(char) * strlen(self));
+	  strcpy(plural_self, self);
+	  pluralise_word(&plural_self[0]);
 	  
 	  char* temp_name2 = malloc(sizeof(char) * (strlen(t1))) ;
 	  strcpy(temp_name2, t1);
 	  to_upper(&temp_name2[0]);
     
-	  fprintf(fp1_, "\t%s = fields.Nested('%sSchema',many=True, exclude=('%s',))\n",plural_child, temp_name2, my_entity->name);
+	  fprintf(fp1_, "\t%s = fields.Nested('%sSchema',many=True, exclude=('%s',))\n",plural_child, temp_name2, plural_self);
 	  
 	  free(plural_child);
 	}
@@ -179,8 +186,17 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
 	char* temp_name1 = malloc(sizeof(char) * (strlen(my_entity->parent))) ;
 	strcpy(temp_name1, my_entity->parent);
 	to_upper(&temp_name1[0]);
-    
-	fprintf(fp1_,"\t%s = fields.Nested('%sSchema', many=True, exclude=('%s', ))",plural_child, temp_name1, my_entity->name);
+
+
+	
+	  char* self = my_entity->name;
+	   char* plural_self;
+	  plural_self= malloc(sizeof(char) * strlen(self));
+	  strcpy(plural_self, self);
+	  pluralise_word(&plural_self[0]);
+	  
+	
+	fprintf(fp1_,"\t%s = fields.Nested('%sSchema', many=True, exclude=('%s', ))",plural_child, temp_name1, plural_self);
 
 	free(temp_name1);
       }

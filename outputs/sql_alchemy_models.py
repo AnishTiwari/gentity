@@ -13,6 +13,11 @@ staff_course = db.Table("staff_course",
 	db.Column("course_id", db.Integer, db.ForeignKey("course.id")),
 	db.Column("staff_id", db.Integer, db.ForeignKey("staff.id")))
 
+
+schedule_course = db.Table("schedule_course",
+	db.Column("course_id", db.Integer, db.ForeignKey("course.id")),
+	db.Column("schedule_id", db.Integer, db.ForeignKey("schedule.id")))
+
 class Course(db.Model):
 	__tablename__ = 'course'
 	id = db.Column(db.Integer, primary_key=True)
@@ -20,6 +25,7 @@ class Course(db.Model):
 	course_code = db.Column(db.String(40))
 	users = db.relationship("User", secondary=user_course, backref=db.backrefs("courses") )
 	staffs = db.relationship("Staff", secondary=staff_course, backref=db.backrefs("courses") )
+	schedules = db.relationship("Schedule", secondary=schedule_course, backref=db.backrefs("courses") )
 
 
 class User(db.Model):
@@ -52,5 +58,12 @@ class Attendance(db.Model):
 	is_present = db.Column(db.Boolean)
 	is_fingerprint = db.Column(db.Boolean)
 	logged_time = db.Column(db.DateTime)
+
+
+class Schedule(db.Model):
+	__tablename__ = 'schedule'
+	id = db.Column(db.Integer, primary_key=True)
+	day = db.Column(db.Integer)
+	period = db.Column(db.Integer)
 
 
