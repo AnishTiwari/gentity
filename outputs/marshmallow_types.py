@@ -46,6 +46,9 @@ class CourseSchema(Schema):
 	id = fields.Int(dump_only=True)
 	course_name = fields.Str()
 	course_code = fields.Str()
+	users = fields.Nested('UserSchema',many=True, exclude=('courses',))
+	staffs = fields.Nested('StaffSchema',many=True, exclude=('courses',))
+	schedules = fields.Nested('ScheduleSchema',many=True, exclude=('courses',))
 
 
 

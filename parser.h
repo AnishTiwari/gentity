@@ -69,14 +69,12 @@ int parse(){
 	  else if(   (strstr(curr_word,"/Entity" )!= NULL)){
 
 	    container->entity[container->en_idx] = *my_entity;
-
 	    container->en_idx++;
 	    container->entity = realloc(container->entity, sizeof(en) * (container->en_idx+1));
 	   
 	  }
 
 	  else if( strstr(curr_word, "/Container") != NULL ){
-
 
 	    /* calling the datatype parser here and printing the parsed datatyes  */
 
@@ -148,7 +146,6 @@ int parse(){
 		    }
 		}
 		sanitised_value[x] ='\0';
-
 		
 		if(strcmp(parsed->key, "Name") == 0){
 		  my_entity->name  =(char *) malloc(sizeof(strlen(sanitised_value)) + 1);
@@ -161,7 +158,6 @@ int parse(){
 		  my_entity->description  = malloc(sizeof(strlen(sanitised_value)) +1 );
 		  strcpy(my_entity->description , sanitised_value);
 		}
-
 	
 		else if(strcmp(parsed->key, "Parent") == 0){
 		  int entity_no;
@@ -204,25 +200,20 @@ int parse(){
 		  my_entity->attributes->attribute[my_entity->attributes->idx].validation = (char *)malloc(sizeof(strlen(sanitised_value)) +1);
 		  strcpy( my_entity->attributes->attribute[my_entity->attributes->idx].validation , sanitised_value);
 		}
-
 		
 		else if(strcmp(parsed->key, "Type") == 0){
 		  my_entity->attributes->attribute[my_entity->attributes->idx].type = malloc(sizeof(strlen(sanitised_value)) +1 );
 		  strcpy(my_entity->attributes->attribute[my_entity->attributes->idx].type , sanitised_value);
 		}
-
-		    
+   
 		else if(strcmp(parsed->key, "Nullable") == 0){
 		  if(strcmp(sanitised_value, "False") == 0)
 		    my_entity->attributes->attribute[my_entity->attributes->idx].is_nullable = 0;
-		 
-		
+
 		}
 
 		/* persistent or non persistent */
 		else{
-
-
 		  if(strcmp(parsed->key, "Persistent") == 0){		  
 		    if(strcmp(parsed->value ,"\"False\"") == 0)
 		      my_entity->persistent = 0;
@@ -230,11 +221,9 @@ int parse(){
 		      my_entity->persistent =1;
 		  }
 		}
-		
 
 	      }
 	    if(parsed->end){
-  
 	      /*
 		1) assign the attribute,
 		2) allocate a new attribute struct memory for ++idx 
@@ -244,7 +233,6 @@ int parse(){
 	      my_entity->attributes->attribute = realloc(my_entity->attributes->attribute,sizeof(attr) * ((my_entity->attributes->idx)+1));
 
 	    }
-
 	    else{
 	      printf("%s !! not interested\n",curr_word);
 	    }
@@ -255,7 +243,6 @@ int parse(){
   }
 
   return 1;
-
 }
 
 #endif

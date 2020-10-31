@@ -6,7 +6,7 @@
 int main(){
 
   if(parse()){
-    printf("Succesfully Parsed!!");
+    printf("Successfully Parsed!!");
   }
 
   else{

@@ -74,8 +74,7 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
       /* check if the attr is of type -ENUM */
 
       if(strstr(my_entity->attributes->attribute[i].attr_name, "Enum") != NULL){
-	fprintf(fp1_, "\t%s = fields.Str(validate=validate.OneOf([", my_entity->attributes->attribute[i].attr_name);
-	  
+	fprintf(fp1_, "\t%s = fields.Str(validate=validate.OneOf([", my_entity->attributes->attribute[i].attr_name);	  
 	ec_t key_enum_container = find_enum( my_entity->attributes->attribute[i].attr_name, ec);
 
 	et_t key_enum = key_enum_container->enums;
@@ -109,11 +108,9 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
 	  else{
 	    fprintf(fp1_, "\t%s = fields.%s()\n",my_entity->attributes->attribute[i].attr_name,got_basetype);
 	  }
-	}
-      
+	}      
       }
     }
-    
     /* **********  nested schemas ****************/
 
     /*  1: if the current entity is parent to some other entity*/
@@ -142,9 +139,8 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
 	  strcpy(plural_child, t);
 	  pluralise_word(&plural_child[0]);
 
-
 	  char* self = my_entity->name;
-	   char* plural_self;
+	  char* plural_self;
 	  plural_self = malloc(sizeof(char) * strlen(self));
 	  strcpy(plural_self, self);
 	  pluralise_word(&plural_self[0]);
@@ -153,11 +149,36 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
 	  strcpy(temp_name2, t1);
 	  to_upper(&temp_name2[0]);
     
-	  fprintf(fp1_, "\t%s = fields.Nested('%sSchema',many=True, exclude=('%s',))\n",plural_child, temp_name2, plural_self);
+	  fprintf(fp1_, "\t%s = fields.Nested('%sSchema', many=True, exclude=('%s',))\n",plural_child, temp_name2, plural_self);
 	  
 	  free(plural_child);
 	}
-	
+
+      else if(strcmp(container->entity[my_entity->relation[child]].parent_relation, "ManyToMany") == 0)
+	{
+	  /* exclude curr entity  to avoid self loop */
+
+	  char* t = container->entity[my_entity->relation[child]].name;
+	  char* t1 = container->entity[my_entity->relation[child]].name;
+	  char* plural_child;
+	  plural_child = malloc(sizeof(char) * strlen(t));
+	  strcpy(plural_child, t);
+	  pluralise_word(&plural_child[0]);
+
+	  char* self = my_entity->name;
+	  char* plural_self;
+	  plural_self = malloc(sizeof(char) * strlen(self));
+	  strcpy(plural_self, self);
+	  pluralise_word(&plural_self[0]);
+	  
+	  char* temp_name2 = malloc(sizeof(char) * (strlen(t1))) ;
+	  strcpy(temp_name2, t1);
+	  to_upper(&temp_name2[0]);
+    
+	  fprintf(fp1_, "\t%s = fields.Nested('%sSchema', many=True, exclude=('%s',))\n",plural_child, temp_name2, plural_self);
+	  
+	  free(plural_child);
+	}
     }
 
     /* 2: if the current entity is child to someother entity */
@@ -186,15 +207,12 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
 	char* temp_name1 = malloc(sizeof(char) * (strlen(my_entity->parent))) ;
 	strcpy(temp_name1, my_entity->parent);
 	to_upper(&temp_name1[0]);
-
-
 	
-	  char* self = my_entity->name;
-	   char* plural_self;
-	  plural_self= malloc(sizeof(char) * strlen(self));
-	  strcpy(plural_self, self);
-	  pluralise_word(&plural_self[0]);
-	  
+	char* self = my_entity->name;
+	char* plural_self;
+	plural_self= malloc(sizeof(char) * strlen(self));
+	strcpy(plural_self, self);
+	pluralise_word(&plural_self[0]);	  
 	
 	fprintf(fp1_,"\t%s = fields.Nested('%sSchema', many=True, exclude=('%s', ))",plural_child, temp_name1, plural_self);
 
@@ -205,8 +223,6 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
     
     fprintf(fp1_, "\n\n\n");
     fclose(fp1_); 
-  
   }
- 
 }
 #endif

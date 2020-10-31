@@ -23,9 +23,9 @@ class Course(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	course_name = db.Column(db.String(40))
 	course_code = db.Column(db.String(40))
-	users = db.relationship("User", secondary=user_course, backref=db.backrefs("courses") )
-	staffs = db.relationship("Staff", secondary=staff_course, backref=db.backrefs("courses") )
-	schedules = db.relationship("Schedule", secondary=schedule_course, backref=db.backrefs("courses") )
+	users = db.relationship("User", secondary=user_course, backref=db.backref("courses") )
+	staffs = db.relationship("Staff", secondary=staff_course, backref=db.backref("courses") )
+	schedules = db.relationship("Schedule", secondary=schedule_course, backref=db.backref("courses") )
 
 
 class User(db.Model):
