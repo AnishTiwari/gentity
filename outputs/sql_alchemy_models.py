@@ -9,11 +9,6 @@ user_course = db.Table("user_course",
 	db.Column("user_id", db.Integer, db.ForeignKey("user.id")))
 
 
-staff_course = db.Table("staff_course",
-	db.Column("course_id", db.Integer, db.ForeignKey("course.id")),
-	db.Column("staff_id", db.Integer, db.ForeignKey("staff.id")))
-
-
 schedule_course = db.Table("schedule_course",
 	db.Column("course_id", db.Integer, db.ForeignKey("course.id")),
 	db.Column("schedule_id", db.Integer, db.ForeignKey("schedule.id")))
@@ -24,7 +19,7 @@ class Course(db.Model):
 	course_name = db.Column(db.String(40))
 	course_code = db.Column(db.String(40))
 	users = db.relationship("User", secondary=user_course, backref=db.backref("courses") )
-	staffs = db.relationship("Staff", secondary=staff_course, backref=db.backref("courses") )
+	staff = db.relationship("Staff", backref="course" ,uselist=False)
 	schedules = db.relationship("Schedule", secondary=schedule_course, backref=db.backref("courses") )
 
 
@@ -36,10 +31,11 @@ class User(db.Model):
 	pub_key = db.Column(db.String(40))
 	sign_count = db.Column(db.Integer)
 	username = db.Column(db.String(40))
-	email_id = db.Column(db.String(40))
-	roll_no = db.Column(db.Integer)
+	emailid = db.Column(db.String(40))
+	rollno = db.Column(db.Integer)
 	rp_id = db.Column(db.String(40))
 	icon_url = db.Column(db.String(40))
+	credential_id = db.Column(db.String(40))
 
 
 class Staff(db.Model):
@@ -47,6 +43,7 @@ class Staff(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	staff_name = db.Column(db.String(40))
 	staff_id_no = db.Column(db.Integer)
+	course_id = db.Column(db.Integer,db.ForeignKey('course.id'), unique=True)
 
 
 class Attendance(db.Model):
@@ -58,6 +55,15 @@ class Attendance(db.Model):
 	is_present = db.Column(db.Boolean)
 	is_fingerprint = db.Column(db.Boolean)
 	logged_time = db.Column(db.DateTime)
+	location = db.relationship("Location", backref="attendance" ,uselist=False)
+
+
+class Location(db.Model):
+	__tablename__ = 'location'
+	id = db.Column(db.Integer, primary_key=True)
+	latitude = db.Column(db.Integer)
+	longitude = db.Column(db.Integer)
+	attendance_id = db.Column(db.Integer,db.ForeignKey('attendance.id'), unique=True)
 
 
 class Schedule(db.Model):
@@ -65,5 +71,12 @@ class Schedule(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	day = db.Column(db.Integer)
 	period = db.Column(db.Integer)
+
+
+class Feedback(db.Model):
+	__tablename__ = 'feedback'
+	id = db.Column(db.Integer, primary_key=True)
+	rating = db.Column(db.Integer)
+	comment = db.Column(db.String(40))
 
 

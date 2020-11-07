@@ -3,11 +3,25 @@
 
 
 
+class FeedbackSchema(Schema):
+	id = fields.Int(dump_only=True)
+	rating = fields.Integer()
+	comment = fields.Str()
+
+
+
 class ScheduleSchema(Schema):
 	id = fields.Int(dump_only=True)
 	day = fields.Integer()
 	period = fields.Integer()
 	courses = fields.Nested('CourseSchema', many=True, exclude=('schedules', ))
+
+
+class LocationSchema(Schema):
+	id = fields.Int(dump_only=True)
+	latitude = fields.Integer()
+	longitude = fields.Integer()
+	attendance = fields.Nested('AttendanceSchema', exclude=('location', ))
 
 
 class AttendanceSchema(Schema):
@@ -18,6 +32,7 @@ class AttendanceSchema(Schema):
 	is_present = fields.Bool()
 	is_fingerprint = fields.Bool()
 	logged_time = fields.DateTime()
+	location = fields.Nested('LocationSchema', exclude=('attendance',))
 
 
 
@@ -25,7 +40,7 @@ class StaffSchema(Schema):
 	id = fields.Int(dump_only=True)
 	staff_name = fields.Str()
 	staff_id_no = fields.Integer()
-	courses = fields.Nested('CourseSchema', many=True, exclude=('staffs', ))
+	course = fields.Nested('CourseSchema', exclude=('staff', ))
 
 
 class UserSchema(Schema):
@@ -35,10 +50,11 @@ class UserSchema(Schema):
 	pub_key = fields.Str()
 	sign_count = fields.Integer()
 	username = fields.Str()
-	email_id = fields.Str()
-	roll_no = fields.Integer()
+	emailid = fields.Str()
+	rollno = fields.Integer()
 	rp_id = fields.Str()
 	icon_url = fields.Str()
+	credential_id = fields.Str()
 	courses = fields.Nested('CourseSchema', many=True, exclude=('users', ))
 
 
@@ -46,9 +62,9 @@ class CourseSchema(Schema):
 	id = fields.Int(dump_only=True)
 	course_name = fields.Str()
 	course_code = fields.Str()
-	users = fields.Nested('UserSchema',many=True, exclude=('courses',))
-	staffs = fields.Nested('StaffSchema',many=True, exclude=('courses',))
-	schedules = fields.Nested('ScheduleSchema',many=True, exclude=('courses',))
+	users = fields.Nested('UserSchema', many=True, exclude=('courses',))
+	staff = fields.Nested('StaffSchema', exclude=('course',))
+	schedules = fields.Nested('ScheduleSchema', many=True, exclude=('courses',))
 
 
 

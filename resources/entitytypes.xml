@@ -14,15 +14,17 @@
             <Attribute AttrName="pub_key" Type="DummyString" />
             <Attribute AttrName="sign_count" Type="DummyInteger" />
             <Attribute AttrName="username" Type="DummyString" />
-            <Attribute AttrName="email_id" Type="DummyString" />
-            <Attribute AttrName="roll_no" Type="DummyInteger" />
+            <Attribute AttrName="emailid" Type="DummyString" />
+            <Attribute AttrName="rollno" Type="DummyInteger" />
             <Attribute AttrName="rp_id" Type="DummyString" />
             <Attribute AttrName="icon_url" Type="DummyString" />
+	    <Attribute AttrName="credential_id" Type="DummyString" />
+	    
         </Entity.Attributes>
     </Entity>
 
 
-    <Entity Name="staff" Parent="course" ParentRelation="ManyToMany" >
+    <Entity Name="staff" Parent="course" ParentRelation="OneToOne" >
         <Entity.Attributes>
             <Attribute AttrName="staff_name" Type="DummyString" />
             <Attribute AttrName="staff_id_no" Type="DummyInteger" />
@@ -30,21 +32,35 @@
         </Entity.Attributes>
     </Entity>
     
-    <Entity Name="attendance">
+    <Entity Name="attendance" >
         <Entity.Attributes> 
             <Attribute AttrName="staff_id" Type="DummyInteger" />
             <Attribute AttrName="roll_no" Type="DummyInteger" />
-            <Attribute AttrName="period" Type="DummyInteger" />
-            <Attribute AttrName="is_present" Type="Bool" />
-            <Attribute AttrName="is_fingerprint" Type="Bool" />
-            <Attribute AttrName="logged_time" Type="DateTime" />
+            <Attribute AttrName="period" Type="DummyInteger" /> 
+            <Attribute AttrName="is_present" Type="Bool" /> 
+            <Attribute AttrName="is_fingerprint" Type="Bool" /> 
+            <Attribute AttrName="logged_time" Type="DateTime" /> 
+        </Entity.Attributes> 
+    </Entity> 
+    <Entity Name="location" Parent="attendance" ParentRelation="OneToOne" >
+        <Entity.Attributes> 
+            <Attribute AttrName="latitude" Type="DummyInteger" /> 
+            <Attribute AttrName="longitude" Type="DummyInteger" /> 
         </Entity.Attributes> 
     </Entity> 
 
+     
     <Entity Name="schedule" Parent="course" ParentRelation="ManyToMany" >
         <Entity.Attributes>
             <Attribute AttrName="day" Type="DummyInteger" />
             <Attribute AttrName="period" Type="DummyInteger" />
+        </Entity.Attributes>
+    </Entity> 
+
+        <Entity Name="feedback" >
+        <Entity.Attributes>
+            <Attribute AttrName="rating" Type="DummyInteger" />
+            <Attribute AttrName="comment" Type="DummyString" />
         </Entity.Attributes>
     </Entity> 
 

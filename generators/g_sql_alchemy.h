@@ -186,7 +186,7 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 
 	}
       }
-      if(special){
+      /* if(special){ */
 
 	if(my_entity->size >= 0 ){
 
@@ -195,6 +195,7 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	    /* relation is one to one with child */
 	    if(strcmp(container->entity[my_entity->relation[rel_idx]].parent_relation, "OneToOne") == 0)
 	      {
+		
 		char* temp_relation;
 		temp_relation = malloc(sizeof(strlen(container->entity[my_entity->relation[rel_idx]].name)));
 		strcpy(temp_relation,container->entity[my_entity->relation[rel_idx]].name);
@@ -269,7 +270,7 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	
 	}
       
-      }
+      /* } */
 
       fputs("\n\n\n",fp1);  
       fclose(fp1);
