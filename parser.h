@@ -8,6 +8,7 @@
 
 #include "./generators/g_sql_alchemy.h"
 #include "./generators/marshmallow/g_marshmallow.c"
+#include "./generators/angular/g_angular.c"
 
 #include "./structure.h"
 #include "./utility.h"
@@ -40,6 +41,12 @@ int parse(){
     exit(0);
   }
 
+  if(angular_init_file() != 1){
+    printf("Exiting now due to file angular init error\n");
+    exit(0);
+  }
+  
+  
   /* end of inits */
   
   _d_t parsed;
@@ -63,10 +70,11 @@ int parse(){
       else
 	{
 	  i=0;
+	  
 	  if( (strstr(curr_word, "/Entity.Attributes") != NULL)){
 	    
 	  }
-	  else if(   (strstr(curr_word,"/Entity" )!= NULL)){
+	  else if((strstr(curr_word,"/Entity" )!= NULL)){
 
 	    container->entity[container->en_idx] = *my_entity;
 	    container->en_idx++;
@@ -76,8 +84,7 @@ int parse(){
 
 	  else if( strstr(curr_word, "/Container") != NULL ){
 
-	    /* calling the datatype parser here and printing the parsed datatyes  */
-
+	    /* calling the datatype parser here and printing the parsed datatyes */
 	    if(datatypeparse() == 1){
 	      printf("DataType File Not found !!!! \n\n\n\n");
 	      exit(0);
@@ -93,7 +100,9 @@ int parse(){
 	    /* CALL THE GENERATORS HERE */
 	    g_sql_alchemy(container, my_dt);
 	    g_marshmallow(container, my_dt, my_ec);
+	    g_angular(container, my_dt, my_ec);
 
+	    /* enum for sql alchemy */
 	    write_enum_class();
 	    
 	  }

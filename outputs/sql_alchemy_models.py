@@ -46,6 +46,14 @@ class Staff(db.Model):
 	course_id = db.Column(db.Integer,db.ForeignKey('course.id'), unique=True)
 
 
+class Location(db.Model):
+	__tablename__ = 'location'
+	id = db.Column(db.Integer, primary_key=True)
+	latitude = db.Column(db.Integer)
+	longitude = db.Column(db.Integer)
+	attendance = db.relationship("Attendance", backref="location" ,uselist=False)
+
+
 class Attendance(db.Model):
 	__tablename__ = 'attendance'
 	id = db.Column(db.Integer, primary_key=True)
@@ -55,15 +63,8 @@ class Attendance(db.Model):
 	is_present = db.Column(db.Boolean)
 	is_fingerprint = db.Column(db.Boolean)
 	logged_time = db.Column(db.DateTime)
-	location = db.relationship("Location", backref="attendance" ,uselist=False)
-
-
-class Location(db.Model):
-	__tablename__ = 'location'
-	id = db.Column(db.Integer, primary_key=True)
-	latitude = db.Column(db.Integer)
-	longitude = db.Column(db.Integer)
-	attendance_id = db.Column(db.Integer,db.ForeignKey('attendance.id'), unique=True)
+	course_code = db.Column(db.String(40))
+	location_id = db.Column(db.Integer,db.ForeignKey('location.id'), unique=True)
 
 
 class Schedule(db.Model):
@@ -78,5 +79,6 @@ class Feedback(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	rating = db.Column(db.Integer)
 	comment = db.Column(db.String(40))
+	course_code = db.Column(db.String(40))
 
 

@@ -8,11 +8,12 @@
 #include "./structure.h"
 #include "./utility.h"
 #include <stdlib.h>
-#include<stdio.h>
+#include <stdio.h>
 
 #define ENUMTYPE_FILE "./resources/enumtypes.xml"
 
 #define ENUM_CLASS_FILE "./outputs/enums.py"
+#define ENUM_TS_MODEL "./outputs/enums.ts"
 
 
 ec_t my_ec, s1 ;

@@ -1,6 +1,5 @@
 #include "./enumtypeparser.h"
 
-
 et_t prev_ = NULL;
 
 
@@ -35,25 +34,36 @@ void write_enum_class(){
   ec_t ss;
 
   FILE* fp_e ;
-
+  FILE *fp_ts;
+  
   fp_e = fopen(ENUM_CLASS_FILE, "w+");
+  fp_ts = fopen(ENUM_TS_MODEL, "w+");
 
   for(ss=s1; ss != NULL; ss=ss->hh.next) {
+
     fprintf(fp_e, "class %s:\n", ss->enum_name);
+    fprintf(fp_ts, "enum %s{\n", ss->enum_name);
+
     et_t temp_et = ss->enums;
+
     while(temp_et != NULL){
+      
       fprintf(fp_e, "\t%s = '%s'\n", temp_et->value, temp_et->value);
+      fprintf(fp_ts, "\t%s,\n", temp_et->value);
+      
       temp_et = temp_et->next;
     }
+    
     fprintf(fp_e, "\n\n");
+    fprintf(fp_ts, "}\n\n");
     
   }
   fclose(fp_e);
+  fclose(fp_ts);
   printf("WRITTEN: Enum classes\n");
 }
 
 /* end of uthash lib fns: */
-
 int enumtypeparse(){
 
   FILE * fp_ep;
@@ -89,9 +99,7 @@ int enumtypeparse(){
 	  }
 	  else if(strstr(curr_word, "/EnumType") != NULL){
 
-
 	    /* assigning enum to enum container */
-
 	    my_ec->enums = my_et;
 	    add_new_enum(my_ec);
 

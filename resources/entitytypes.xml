@@ -31,8 +31,15 @@
 
         </Entity.Attributes>
     </Entity>
-    
-    <Entity Name="attendance" >
+
+    <Entity Name="location" >
+        <Entity.Attributes> 
+            <Attribute AttrName="latitude" Type="DummyInteger" /> 
+            <Attribute AttrName="longitude" Type="DummyInteger" /> 
+        </Entity.Attributes> 
+    </Entity> 
+
+    <Entity Name="attendance" Parent="location" ParentRelation="OneToOne" >
         <Entity.Attributes> 
             <Attribute AttrName="staff_id" Type="DummyInteger" />
             <Attribute AttrName="roll_no" Type="DummyInteger" />
@@ -40,12 +47,8 @@
             <Attribute AttrName="is_present" Type="Bool" /> 
             <Attribute AttrName="is_fingerprint" Type="Bool" /> 
             <Attribute AttrName="logged_time" Type="DateTime" /> 
-        </Entity.Attributes> 
-    </Entity> 
-    <Entity Name="location" Parent="attendance" ParentRelation="OneToOne" >
-        <Entity.Attributes> 
-            <Attribute AttrName="latitude" Type="DummyInteger" /> 
-            <Attribute AttrName="longitude" Type="DummyInteger" /> 
+	    <Attribute AttrName="course_code" Type="DummyString" /> 
+
         </Entity.Attributes> 
     </Entity> 
 
@@ -61,6 +64,8 @@
         <Entity.Attributes>
             <Attribute AttrName="rating" Type="DummyInteger" />
             <Attribute AttrName="comment" Type="DummyString" />
+            <Attribute AttrName="course_code" Type="DummyString" /> 
+
         </Entity.Attributes>
     </Entity> 
 

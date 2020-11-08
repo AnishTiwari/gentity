@@ -1,24 +1,22 @@
-*GENTITY TOOL
-
-Parent - Node
+* GENTITY TOOL
 
 
-
-
-
-since the attributes in the xml can vary in position i.e; sometimes name can be the first attr in the entity node
-sometimes desc can be first so there is a need to store the parsed in a struct to easily write to a file
-
-
-therefore a struct is used to store a entity (its attrs, relations) 
+Generate models, classes, types from xml 
 
 * Supported generators
   + FLASK_SQL_ALCHEMY
+  + MARSHMALLOW
+  + TYPESCRIPT
+
 
 + relations supported
  + One to One
  + One To many
  + Many to Many
 
+
+-- To implement enum type in sql-alchemy, typescript we write the enum to another file
+   enums.py, enums.ts and include it to respective model files (in entitytypes.xml denote
+   enumtype as {{ENUM_NAME}}Enum to get recognised by the parser as an enum type value 
  
-updated on :<2020-09-06 Sun>
+updated on : <2020-11-09 Mon>

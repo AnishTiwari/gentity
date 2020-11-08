@@ -7,6 +7,7 @@ class FeedbackSchema(Schema):
 	id = fields.Int(dump_only=True)
 	rating = fields.Integer()
 	comment = fields.Str()
+	course_code = fields.Str()
 
 
 
@@ -17,13 +18,6 @@ class ScheduleSchema(Schema):
 	courses = fields.Nested('CourseSchema', many=True, exclude=('schedules', ))
 
 
-class LocationSchema(Schema):
-	id = fields.Int(dump_only=True)
-	latitude = fields.Integer()
-	longitude = fields.Integer()
-	attendance = fields.Nested('AttendanceSchema', exclude=('location', ))
-
-
 class AttendanceSchema(Schema):
 	id = fields.Int(dump_only=True)
 	staff_id = fields.Integer()
@@ -32,7 +26,15 @@ class AttendanceSchema(Schema):
 	is_present = fields.Bool()
 	is_fingerprint = fields.Bool()
 	logged_time = fields.DateTime()
-	location = fields.Nested('LocationSchema', exclude=('attendance',))
+	course_code = fields.Str()
+	location = fields.Nested('LocationSchema', exclude=('attendance', ))
+
+
+class LocationSchema(Schema):
+	id = fields.Int(dump_only=True)
+	latitude = fields.Integer()
+	longitude = fields.Integer()
+	attendance = fields.Nested('AttendanceSchema', exclude=('location',))
 
 
 
