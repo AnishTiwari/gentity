@@ -3,6 +3,14 @@
 
 
 
+class Staff(db.Model):
+	__tablename__ = 'staff'
+	id = db.Column(db.Integer, primary_key=True)
+	staff_name = db.Column(db.String(40))
+	staff_id_no = db.Column(db.Integer)
+	courses = db.relationship("Course", backref="staff")
+
+
 
 user_course = db.Table("user_course",
 	db.Column("course_id", db.Integer, db.ForeignKey("course.id")),
@@ -18,8 +26,10 @@ class Course(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	course_name = db.Column(db.String(40))
 	course_code = db.Column(db.String(40))
+	latitude = db.Column(db.Integer)
+	longitude = db.Column(db.Integer)
+	staff_id = db.Column(db.Integer, db.ForeignKey('staff.id'))
 	users = db.relationship("User", secondary=user_course, backref=db.backref("courses") )
-	staff = db.relationship("Staff", backref="course" ,uselist=False)
 	schedules = db.relationship("Schedule", secondary=schedule_course, backref=db.backref("courses") )
 
 
@@ -36,14 +46,6 @@ class User(db.Model):
 	rp_id = db.Column(db.String(40))
 	icon_url = db.Column(db.String(40))
 	credential_id = db.Column(db.String(40))
-
-
-class Staff(db.Model):
-	__tablename__ = 'staff'
-	id = db.Column(db.Integer, primary_key=True)
-	staff_name = db.Column(db.String(40))
-	staff_id_no = db.Column(db.Integer)
-	course_id = db.Column(db.Integer,db.ForeignKey('course.id'), unique=True)
 
 
 class Location(db.Model):
@@ -64,7 +66,7 @@ class Attendance(db.Model):
 	is_fingerprint = db.Column(db.Boolean)
 	logged_time = db.Column(db.DateTime)
 	course_code = db.Column(db.String(40))
-	location_id = db.Column(db.Integer,db.ForeignKey('location.id'), unique=True)
+	location_id = db.Column(db.Integer, db.ForeignKey('location.id'), unique=True)
 
 
 class Schedule(db.Model):

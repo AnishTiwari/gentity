@@ -62,41 +62,34 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 
       if(my_entity->size >= 0 ){
 
-		      char* caps_1 ;
-	      char* assoc_entity;
+	char* caps_1 ;
+	char* assoc_entity;
 
 	for(int rel_idx =0; rel_idx <= my_entity->size; rel_idx ++){
 
 	  /* Association table creation */
 	  if(strcmp(container->entity[my_entity->relation[rel_idx]].parent_relation, "ManyToMany") == 0)
 	    {
-	
-	      assoc_entity = malloc(sizeof(char) * (strlen(container->entity[my_entity->relation[rel_idx]].name) + strlen(my_entity->name) +1));
+	      assoc_entity = malloc(sizeof(char) * (strlen(container->entity[my_entity->relation[rel_idx]].name) + strlen(my_entity->name) +2));
 
 	      caps_1 = malloc(sizeof(char) * (strlen(container->entity[my_entity->relation[rel_idx]].name)) +1);
-	      strcpy( caps_1 ,container->entity[my_entity->relation[rel_idx]].name);
+	      strcpy( caps_1, container->entity[my_entity->relation[rel_idx]].name);
+
 	      /* to_upper(&caps_1[0]); */
-
-	      printf("%s:\n\n\n",caps_1);
+	      printf("%s:\n\n\n", caps_1);
 	    
-	      strcat(assoc_entity,caps_1);
-
-	      strcat(assoc_entity, "_");
-	     
+	      strcpy(assoc_entity, caps_1);
+	      strcat(assoc_entity, "_");	     
 	      caps_1 = malloc(sizeof(char) * (strlen(my_entity->name)));
 	      strcpy( caps_1 ,my_entity->name);
 	   
 	      /* to_upper(&caps_1[0]); */
 	      strcat(assoc_entity,caps_1);
-
-	      fprintf(fp1, "\n%s = db.Table(\"%s\",\n\tdb.Column(\"%s_id\", db.Integer, db.ForeignKey(\"%s.id\")),\n\tdb.Column(\"%s_id\", db.Integer, db.ForeignKey(\"%s.id\")))", assoc_entity,assoc_entity,my_entity->name, my_entity->name, container->entity[my_entity->relation[rel_idx]].name,container->entity[my_entity->relation[rel_idx]].name );
-
-	      /* free(assoc_entity); */
-	      /* free(caps_1); */
+	      
+	      fprintf(fp1, "\n%s = db.Table(\"%s\",\n\tdb.Column(\"%s_id\", db.Integer, db.ForeignKey(\"%s.id\")),\n\tdb.Column(\"%s_id\", db.Integer, db.ForeignKey(\"%s.id\")))", assoc_entity, assoc_entity, my_entity->name, my_entity->name, container->entity[my_entity->relation[rel_idx]].name, container->entity[my_entity->relation[rel_idx]].name );
 	      special = 1;
-	      fputs("\n\n",fp1);
-	    }
-	  
+	      fputs("\n\n\n",fp1);
+	    }	  
 	}
 	
       }	  
@@ -106,15 +99,13 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
       char* temp_name = malloc(sizeof(char)* (strlen(my_entity->name))) ;
       strcpy(temp_name,my_entity->name);
       to_upper(&temp_name[0]);
+      
       fprintf(fp1, "class %s(db.Model):\n",temp_name);
-  
       fprintf(fp1, "\t__tablename__ = '%s'", my_entity->name);
 
       /* Auto generating Id primary key value */
-
       fprintf(fp1, "\n\tid = db.Column(db.Integer, primary_key=True)");
 
-      
       /* assigning the attribute values to class model attribute */
       for(int i=0;i < my_entity->attributes->idx;i++){
 
@@ -123,7 +114,6 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	if(strstr(my_entity->attributes->attribute[i].attr_name, "Enum") != NULL){
 	  fprintf(fp1, "\n\t%s = db.Column(db.Enum(%s))", my_entity->attributes->attribute[i].attr_name, my_entity->attributes->attribute[i].attr_name);
 
-	  
 	}
 	else{
 	  dt_t temp_dt =  find_key(my_entity->attributes->attribute[i].type, my_dt);
@@ -172,14 +162,14 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	/* ONE TO ONE RELATION */
 	if(strcmp(my_entity->parent_relation ,"OneToOne") == 0)
 	  {
-	    fprintf(fp1,"\n\t%s_id = db.Column(db.Integer,db.ForeignKey('%s.id'), unique=True)",my_entity->parent,my_entity->parent);
+	    fprintf(fp1,"\n\t%s_id = db.Column(db.Integer, db.ForeignKey('%s.id'), unique=True)",my_entity->parent,my_entity->parent);
 	
 	  }
 
 	/* ONE TO MANY */
 	else if(strcmp(my_entity->parent_relation, "OneToMany") == 0){
 
-	  fprintf(fp1,"\n\t%s_id = db.Column(db.Integer,db.ForeignKey('%s.id'))",my_entity->parent,my_entity->parent);
+	  fprintf(fp1,"\n\t%s_id = db.Column(db.Integer, db.ForeignKey('%s.id'))",my_entity->parent,my_entity->parent);
 	}
 	/* MANY TO MANY */
 	else{
@@ -188,87 +178,87 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
       }
       /* if(special){ */
 
-	if(my_entity->size >= 0 ){
+      if(my_entity->size >= 0 ){
 
-	  /* WRITES TO THE CURRENT CHILD IN CASE OF RELATION */
-	  for(int rel_idx =0; rel_idx <= my_entity->size; rel_idx ++){
-	    /* relation is one to one with child */
-	    if(strcmp(container->entity[my_entity->relation[rel_idx]].parent_relation, "OneToOne") == 0)
-	      {
+	/* WRITES TO THE CURRENT CHILD IN CASE OF RELATION */
+	for(int rel_idx =0; rel_idx <= my_entity->size; rel_idx ++){
+	  /* relation is one to one with child */
+	  if(strcmp(container->entity[my_entity->relation[rel_idx]].parent_relation, "OneToOne") == 0)
+	    {
 		
-		char* temp_relation;
-		temp_relation = malloc(sizeof(strlen(container->entity[my_entity->relation[rel_idx]].name)));
-		strcpy(temp_relation,container->entity[my_entity->relation[rel_idx]].name);
-		to_upper(&temp_relation[0]);
-		fprintf(fp1,"\n\t%s = db.relationship(\"%s\", backref=\"%s\" ,uselist=False)",container->entity[my_entity->relation[rel_idx]].name, temp_relation,my_entity->name );
+	      char* temp_relation;
+	      temp_relation = malloc(sizeof(strlen(container->entity[my_entity->relation[rel_idx]].name)));
+	      strcpy(temp_relation,container->entity[my_entity->relation[rel_idx]].name);
+	      to_upper(&temp_relation[0]);
+	      fprintf(fp1,"\n\t%s = db.relationship(\"%s\", backref=\"%s\" ,uselist=False)",container->entity[my_entity->relation[rel_idx]].name, temp_relation,my_entity->name );
 
 	    
-		free(temp_relation);
-	      }
-	    /* relation is one to many with child */
+	      free(temp_relation);
+	    }
+	  /* relation is one to many with child */
 
-	    else if(strcmp(container->entity[my_entity->relation[rel_idx]].parent_relation, "OneToMany") == 0)
-	      {
-		char* temp_relation;
-		temp_relation = malloc(sizeof(strlen(container->entity[my_entity->relation[rel_idx]].name)));
-		strcpy(temp_relation, container->entity[my_entity->relation[rel_idx]].name);
-		to_upper(&temp_relation[0]);
+	  else if(strcmp(container->entity[my_entity->relation[rel_idx]].parent_relation, "OneToMany") == 0)
+	    {
+	      char* temp_relation;
+	      temp_relation = malloc(sizeof(strlen(container->entity[my_entity->relation[rel_idx]].name)));
+	      strcpy(temp_relation, container->entity[my_entity->relation[rel_idx]].name);
+	      to_upper(&temp_relation[0]);
 
-		char* plural_child;
-		plural_child = malloc(sizeof(container->entity[my_entity->relation[rel_idx]].name));
-		strcpy(plural_child, container->entity[my_entity->relation[rel_idx]].name);
-		pluralise_word(&plural_child[0]);
-		fprintf(fp1,"\n\t%s = db.relationship(\"%s\", backref=\"%s\")",plural_child, temp_relation,my_entity->name );
-		free(plural_child);
-
-		free(temp_relation);
-	      }
-	    /* relation is Many to many with child */
-	    else {
-	      char* assoc_entity;
-	      assoc_entity = malloc(sizeof(char) * (strlen(container->entity[my_entity->relation[rel_idx]].name)+strlen(my_entity->name))+2);
-
-	      char* caps_1 ;
-	      caps_1 = malloc(sizeof(char) * (strlen(container->entity[my_entity->relation[rel_idx]].name)));
-
-	      strcpy(caps_1, container->entity[my_entity->relation[rel_idx]].name);
-	    
-	      strcpy(assoc_entity, caps_1);
-
-	      to_upper(&caps_1[0]);
-	      strcat(assoc_entity, "_");
-	      char* caps_2;
-	      caps_2 = malloc(sizeof(char) * (strlen(my_entity->name)));
-
-	      strcpy(caps_2, my_entity->name);
-	      strcat(assoc_entity,caps_2);
-
-	      printf("%s\n\n",assoc_entity);
-	    
 	      char* plural_child;
-	      plural_child=malloc(sizeof(char) * strlen(container->entity[my_entity->relation[rel_idx]].name));
-	      strcpy(plural_child , container->entity[my_entity->relation[rel_idx]].name);
+	      plural_child = malloc(sizeof(container->entity[my_entity->relation[rel_idx]].name));
+	      strcpy(plural_child, container->entity[my_entity->relation[rel_idx]].name);
 	      pluralise_word(&plural_child[0]);
+	      fprintf(fp1,"\n\t%s = db.relationship(\"%s\", backref=\"%s\")",plural_child, temp_relation,my_entity->name );
+	      free(plural_child);
+
+	      free(temp_relation);
+	    }
+	  /* relation is Many to many with child */
+	  else {
+	    char* assoc_entity;
+	    assoc_entity = malloc(sizeof(char) * (strlen(container->entity[my_entity->relation[rel_idx]].name)+strlen(my_entity->name))+2);
+
+	    char* caps_1 ;
+	    caps_1 = malloc(sizeof(char) * (strlen(container->entity[my_entity->relation[rel_idx]].name)));
+
+	    strcpy(caps_1, container->entity[my_entity->relation[rel_idx]].name);
+	    
+	    strcpy(assoc_entity, caps_1);
+
+	    to_upper(&caps_1[0]);
+	    strcat(assoc_entity, "_");
+	    char* caps_2;
+	    caps_2 = malloc(sizeof(char) * (strlen(my_entity->name)));
+
+	    strcpy(caps_2, my_entity->name);
+	    strcat(assoc_entity,caps_2);
+
+	    printf("%s\n\n",assoc_entity);
+	    
+	    char* plural_child;
+	    plural_child=malloc(sizeof(char) * strlen(container->entity[my_entity->relation[rel_idx]].name));
+	    strcpy(plural_child , container->entity[my_entity->relation[rel_idx]].name);
+	    pluralise_word(&plural_child[0]);
 
 
-	      char* plural_backref_parent;
-	      plural_backref_parent = malloc(sizeof(char) * strlen(my_entity->name));
-	      strcpy(plural_backref_parent , my_entity->name);
-	      pluralise_word(&plural_backref_parent[0]);
+	    char* plural_backref_parent;
+	    plural_backref_parent = malloc(sizeof(char) * strlen(my_entity->name));
+	    strcpy(plural_backref_parent , my_entity->name);
+	    pluralise_word(&plural_backref_parent[0]);
 
  
 	      
-	      fprintf(fp1, "\n\t%s = db.relationship(\"%s\", secondary=%s, backref=db.backref(\"%s\") )",plural_child, caps_1, assoc_entity, plural_backref_parent);
+	    fprintf(fp1, "\n\t%s = db.relationship(\"%s\", secondary=%s, backref=db.backref(\"%s\") )",plural_child, caps_1, assoc_entity, plural_backref_parent);
 
-	      free(assoc_entity);
-	      free(caps_1);
-	      free(caps_2);
-	      free(plural_backref_parent);
-	      free(plural_child);
-	    }
+	    free(assoc_entity);
+	    free(caps_1);
+	    free(caps_2);
+	    free(plural_backref_parent);
+	    free(plural_child);
 	  }
-	
 	}
+	
+      }
       
       /* } */
 

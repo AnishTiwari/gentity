@@ -1,5 +1,5 @@
-
 /* this file contains the structure of entity */
+
 #ifndef STRUCTURE_H
 
 #include "./lib/uthash.h"
@@ -16,13 +16,6 @@ typedef attr* attr_t;
 
 typedef struct attributes_container attr_c;
 typedef attr_c* ac_t;
-
-/* typedef struct relation r; */
-/* typedef r* r_t; */
-
-/* struct relation{ */
-/*   int child; */
-/* }; */
 
 struct attributes_container{ 
   attr_t attribute;
@@ -55,7 +48,6 @@ struct entity_container{
 
 };
 
-
 /* datatype hash table struct */
 
 typedef struct datatype dt;
@@ -68,7 +60,6 @@ struct datatype{
   int  length;
   char* rule;
 };
-
 
 typedef struct enumcontainer ec;
 typedef ec* ec_t;
@@ -88,4 +79,5 @@ struct enumcontainer{
   et_t enums ;
  
 };
+
 #endif

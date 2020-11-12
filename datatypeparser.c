@@ -1,4 +1,5 @@
-/* creates a hash tbale where key is the datatype 
+/* 
+ * creates a hash tbale where key is the datatype 
  * found in the entitytypes.xml and value is the
  * datatypes.xml parsed value
  */
@@ -24,7 +25,6 @@ dt_t find_key( char* key, dt_t dt ){
     exit(1);
   }
 }
-
 
 void print_users() {
   dt_t ss;

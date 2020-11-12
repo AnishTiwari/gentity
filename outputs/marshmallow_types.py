@@ -34,15 +34,8 @@ class LocationSchema(Schema):
 	id = fields.Int(dump_only=True)
 	latitude = fields.Integer()
 	longitude = fields.Integer()
-	attendance = fields.Nested('AttendanceSchema', exclude=('location',))
+	attendance = fields.Nested('AttendanceSchema', exclude=('location', ))
 
-
-
-class StaffSchema(Schema):
-	id = fields.Int(dump_only=True)
-	staff_name = fields.Str()
-	staff_id_no = fields.Integer()
-	course = fields.Nested('CourseSchema', exclude=('staff', ))
 
 
 class UserSchema(Schema):
@@ -64,9 +57,18 @@ class CourseSchema(Schema):
 	id = fields.Int(dump_only=True)
 	course_name = fields.Str()
 	course_code = fields.Str()
-	users = fields.Nested('UserSchema', many=True, exclude=('courses',))
-	staff = fields.Nested('StaffSchema', exclude=('course',))
-	schedules = fields.Nested('ScheduleSchema', many=True, exclude=('courses',))
+	latitude = fields.Integer()
+	longitude = fields.Integer()
+	users = fields.Nested('UserSchema', many=True, exclude=('courses', ))
+	schedules = fields.Nested('ScheduleSchema', many=True, exclude=('courses', ))
+	staff = fields.Nested('StaffSchema', exclude=('courses', ))
+
+
+class StaffSchema(Schema):
+	id = fields.Int(dump_only=True)
+	staff_name = fields.Str()
+	staff_id_no = fields.Integer()
+	courses = fields.Nested('CourseSchema', many=True, exclude=('staff', ))
 
 
 

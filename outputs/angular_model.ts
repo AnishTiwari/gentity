@@ -34,12 +34,6 @@ export class Location{
 }
 
 
-export class Staff{
-	staff_name: String,
-	staff_id_no: Number,
-}
-
-
 export class User{
 	ukey: String,
 	display_name: String,
@@ -57,9 +51,17 @@ export class User{
 export class Course{
 	course_name: String,
 	course_code: String,
+	latitude: Number,
+	longitude: Number,
 	users: User[],
-	staff: Staff,
 	schedules: Schedule[],
+}
+
+
+export class Staff{
+	staff_name: String,
+	staff_id_no: Number,
+	courses: Course[],
 }
 
 

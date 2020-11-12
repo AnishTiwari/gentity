@@ -1,13 +1,25 @@
 <Container>
 
-    <Entity Name="course">
-        <Entity.Attributes>
-            <Attribute AttrName="course_name" Type="DummyString" />
-            <Attribute AttrName="course_code" Type="DummyString" />
-        </Entity.Attributes>
+
+    <Entity Name="staff" > 
+        <Entity.Attributes> 
+            <Attribute AttrName="staff_name" Type="DummyString" /> 
+            <Attribute AttrName="staff_id_no" Type="DummyInteger" /> 
+
+        </Entity.Attributes> 
     </Entity>
 
-  <Entity Name="user" Parent="course" ParentRelation="ManyToMany" >
+  
+    <Entity Name="course" Parent="staff" ParentRelation="OneToMany" > 
+        <Entity.Attributes> 
+            <Attribute AttrName="course_name" Type="DummyString" />
+            <Attribute AttrName="course_code" Type="DummyString" />
+	    <Attribute AttrName="latitude" Type="DummyInteger" />
+	    <Attribute AttrName="longitude" Type="DummyInteger" /> 
+        </Entity.Attributes> 
+    </Entity> 
+
+  <Entity Name="user" Parent="course" ParentRelation="ManyToMany" > 
         <Entity.Attributes>
             <Attribute AttrName="ukey" Type="DummyString" />
             <Attribute AttrName="display_name" Type="DummyString" />
@@ -20,15 +32,6 @@
             <Attribute AttrName="icon_url" Type="DummyString" />
 	    <Attribute AttrName="credential_id" Type="DummyString" />
 	    
-        </Entity.Attributes>
-    </Entity>
-
-
-    <Entity Name="staff" Parent="course" ParentRelation="OneToOne" >
-        <Entity.Attributes>
-            <Attribute AttrName="staff_name" Type="DummyString" />
-            <Attribute AttrName="staff_id_no" Type="DummyInteger" />
-
         </Entity.Attributes>
     </Entity>
 
