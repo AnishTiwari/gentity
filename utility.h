@@ -30,7 +30,6 @@ struct dict{
 };
 
 _d_t split(char * word){
-  printf("UTIL: %s \n",word);
   /* kick of "/" if present in the strlenth of word given */
  
   _d_t my_d = (_d_t) malloc(sizeof(_d));

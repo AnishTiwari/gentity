@@ -24,6 +24,7 @@ export class Attendance{
 	is_fingerprint: Boolean,
 	logged_time: DateTime,
 	course_code: String,
+	feedbacks: Feedback[],
 }
 
 

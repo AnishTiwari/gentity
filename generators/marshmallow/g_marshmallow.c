@@ -68,6 +68,7 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
     if(my_entity->persistent == 1){
       fprintf(fp1_, "\tid = fields.Int(dump_only=True)\n");
     }
+    
     for(int i=0;i < my_entity->attributes->idx;i++){
       dt_t temp_dt =  find_key(my_entity->attributes->attribute[i].type, my_dt);
 
@@ -78,21 +79,27 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
 	ec_t key_enum_container = find_enum( my_entity->attributes->attribute[i].attr_name, ec);
 
 	et_t key_enum = key_enum_container->enums;
+
 	while(key_enum != NULL){
 	  fprintf(fp1_,"'%s',", key_enum->value);
 	  key_enum = key_enum->next;
 	}
+	
 	fprintf(fp1_, "]))\n");
 	  
       }
       else{
+	
 	char* got_basetype =  g_marshmallow_mapper(temp_dt->basetype);
+
 	if(my_entity->attributes->attribute[i].is_nullable == 0){
 
 	  if(dt->length ){
+
 	    fprintf(fp1_, "\t%s = fields.%s(required=True, validate=validate.Length(max=%d))\n",my_entity->attributes->attribute[i].attr_name,got_basetype,dt->length);
  
 	  }
+	  
 	  else{
 	    fprintf(fp1_, "\t%s = fields.%s(required=True)\n",my_entity->attributes->attribute[i].attr_name,got_basetype);
 	  }
@@ -102,22 +109,27 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
 	
 	  /* check if its contains rule */
 	  if(dt->rule != NULL){
+
 	    fprintf(fp1_, "\t%s = fields.%s(validate=validate.Length(max=%d))\n",my_entity->attributes->attribute[i].attr_name,got_basetype,dt->length);
  
 	  }
+	  
 	  else{
+
 	    fprintf(fp1_, "\t%s = fields.%s()\n",my_entity->attributes->attribute[i].attr_name,got_basetype);
+
 	  }
 	}      
       }
     }
+
     /* **********  nested schemas ****************/
 
     /*  1: if the current entity is parent to some other entity*/
     for(int child=0; child <= my_entity->size; child++){
-      if(strcmp(container->entity[my_entity->relation[child]].parent_relation, "OneToOne") == 0)
-	{
 
+      if(strcmp(container->entity[my_entity->relation[child]].parent_relation, "OneToOne") == 0){
+	  
 	  char* temp_name1 = malloc(sizeof(char) * (strlen(container->entity[my_entity->relation[child]].name))) ;
 	  strcpy(temp_name1,container->entity[my_entity->relation[child]].name);
 	  to_upper(&temp_name1[0]);
@@ -189,30 +201,30 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
 	{
 	  if( strcmp(my_entity->parent_relation, "OneToMany") == 0){
 
- char* temp_name1 = malloc(sizeof(char) * (strlen(my_entity->parent))) ;
-	  strcpy(temp_name1, my_entity->parent);
-	  to_upper(&temp_name1[0]);
+	    char* temp_name1 = malloc(sizeof(char) * (strlen(my_entity->parent))) ;
+	    strcpy(temp_name1, my_entity->parent);
+	    to_upper(&temp_name1[0]);
   
-	char* self = my_entity->name;
-	char* plural_self;
-	plural_self= malloc(sizeof(char) * strlen(self));
-	strcpy(plural_self, self);
-	pluralise_word(&plural_self[0]);	  
+	    char* self = my_entity->name;
+	    char* plural_self;
+	    plural_self= malloc(sizeof(char) * strlen(self));
+	    strcpy(plural_self, self);
+	    pluralise_word(&plural_self[0]);	  
 	
-	  fprintf(fp1_,"\t%s = fields.Nested('%sSchema', exclude=('%s', ))",my_entity->parent,temp_name1, plural_self);
+	    fprintf(fp1_,"\t%s = fields.Nested('%sSchema', exclude=('%s', ))",my_entity->parent,temp_name1, plural_self);
 
-	  free(temp_name1);
+	    free(temp_name1);
 	  }
 	  else
 	    {
-	  char* temp_name1 = malloc(sizeof(char) * (strlen(my_entity->parent))) ;
-	  strcpy(temp_name1, my_entity->parent);
-	  to_upper(&temp_name1[0]);
+	      char* temp_name1 = malloc(sizeof(char) * (strlen(my_entity->parent))) ;
+	      strcpy(temp_name1, my_entity->parent);
+	      to_upper(&temp_name1[0]);
     
-	  fprintf(fp1_,"\t%s = fields.Nested('%sSchema', exclude=('%s', ))",my_entity->parent,temp_name1,my_entity->name);
+	      fprintf(fp1_,"\t%s = fields.Nested('%sSchema', exclude=('%s', ))\n",my_entity->parent,temp_name1,my_entity->name);
 
-	  free(temp_name1);
-	}
+	      free(temp_name1);
+	    }
 	}
 
       else {
@@ -232,14 +244,58 @@ void g_marshmallow(en_c_t container, dt_t dt, ec_t ec){
 	strcpy(plural_self, self);
 	pluralise_word(&plural_self[0]);	  
 	
-	fprintf(fp1_,"\t%s = fields.Nested('%sSchema', many=True, exclude=('%s', ))",plural_child, temp_name1, plural_self);
+	fprintf(fp1_,"\t%s = fields.Nested('%sSchema', many=True, exclude=('%s', ))\n",plural_child, temp_name1, plural_self);
 
 	free(temp_name1);
       }      
     }
     
+    /* generating code for references */
+    for(int rel_idx =0; rel_idx <= my_entity->ref_size; rel_idx ++){
+
+	  char* t = container->entity[my_entity->references[rel_idx]].name;
+	  char* t1 = t;
+	  char* plural_child;
+	  plural_child = malloc(sizeof(char) * strlen(t));
+	  strcpy(plural_child, t);
+	  pluralise_word(&plural_child[0]);
+
+	  char* self = my_entity->name;
+	  char* plural_self;
+	  plural_self = malloc(sizeof(char) * strlen(self));
+	  strcpy(plural_self, self);
+	  pluralise_word(&plural_self[0]);
+	  
+	  char* temp_name2 = malloc(sizeof(char) * (strlen(t1))) ;
+	  strcpy(temp_name2, t1);
+	  to_upper(&temp_name2[0]);
+    
+	  fprintf(fp1_, "\t%s = fields.Nested('%sSchema', many=True, exclude=('%s', ))\n",plural_child, temp_name2, my_entity->name);
+	  
+	  free(plural_child);
+    }
+
+    for(int ref_parent = 0; ref_parent <= my_entity->ref_p_size; ref_parent++){
+    
+	    char* temp_name1 = malloc(sizeof(char) * (strlen(container->entity[my_entity->ref_parent[ref_parent]].name))) ;
+	    strcpy(temp_name1, container->entity[my_entity->ref_parent[ref_parent]].name);
+	    to_upper(&temp_name1[0]);
+  
+	    char* self = my_entity->name;
+	    char* plural_self;
+	    plural_self= malloc(sizeof(char) * strlen(self));
+	    strcpy(plural_self, self);
+	    pluralise_word(&plural_self[0]);	  
+	
+	    fprintf(fp1_,"\t%s = fields.Nested('%sSchema', exclude=('%s', ))",container->entity[my_entity->ref_parent[ref_parent]].name, temp_name1, plural_self);
+
+	    free(temp_name1);
+    }
+
     fprintf(fp1_, "\n\n\n");
     fclose(fp1_); 
+
   }
 }
+
 #endif

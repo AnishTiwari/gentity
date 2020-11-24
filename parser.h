@@ -65,7 +65,7 @@ int parse(){
     else {
       curr_word[i] = '\0';
       if(curr_word[0] == '\0'){
-	printf("CAME ACROSS SPACES TOKEN \n");
+	/* printf("CAME ACROSS SPACES TOKEN \n"); */
       }
       else
 	{
@@ -74,11 +74,17 @@ int parse(){
 	  if( (strstr(curr_word, "/Entity.Attributes") != NULL)){
 	    
 	  }
-	  else if((strstr(curr_word,"/Entity" )!= NULL)){
+
+	  else if( (strstr(curr_word, "/Entity.References") != NULL)){
+
+	  }
+
+	  else if((strstr(curr_word, "/Entity" ) != NULL)){
 
 	    container->entity[container->en_idx] = *my_entity;
 	    container->en_idx++;
-	    container->entity = realloc(container->entity, sizeof(en) * (container->en_idx+1));
+	    
+	    container->entity = realloc(container->entity, sizeof(en) * (container->en_idx + 1));
 	   
 	  }
 
@@ -95,7 +101,7 @@ int parse(){
 	      exit(0);
 	    }
 
-	    printf("********************************************\n");
+	    printf("\n********************************************\n");
 	    
 	    /* CALL THE GENERATORS HERE */
 	    g_sql_alchemy(container, my_dt);
@@ -106,23 +112,35 @@ int parse(){
 	    write_enum_class();
 	    
 	  }
+
 	  else  if(strstr(curr_word, "Entity.Attributes") != NULL){
 	    /* allocate memory to contain attribute */
 	    my_entity->attributes->attribute = malloc(sizeof(attr) * 1);
 	  }
-	  
-	  else if(strstr(curr_word,"Entity" ) != NULL){
+
+	  else  if(strstr(curr_word, "Entity.References") != NULL){
+	    my_entity->rsize=0;
+	  }
+
+	  else if(strstr(curr_word, "Entity" ) != NULL){
 
 	    /* create a new struct obj entity */
 	    if( (my_entity = malloc(sizeof(en))) == NULL){
-	      perror("MALLOC");
+	      perror("MALLOC:");
 	    }
+	    
 	    if( (my_entity->attributes = malloc(sizeof(attr_c))) == NULL){
-	      perror("MALLOC");
+	      perror("MALLOC:");
 	    }
-	    my_entity->attributes->idx =0;
+
+	    my_entity->description = NULL;
+	    my_entity->attributes->idx = 0;
 	    my_entity->relation = (int *)malloc(sizeof(int) * 1);
 	    my_entity->size = -1;
+	    my_entity->references = (int *)malloc(sizeof(int) * 1);
+	    my_entity->ref_size = -1;
+	    my_entity->ref_p_size = -1;
+	    my_entity->ref_parent = malloc(sizeof(en) * 1);
 
 	  }
 
@@ -133,6 +151,7 @@ int parse(){
 	    container->entity = malloc(sizeof(en));
 
 	  }
+
 	  else{
 	    /* call split only it contains key-value pairs */
 	    parsed = split(curr_word);
@@ -144,8 +163,8 @@ int parse(){
 		printf("Parsed VALUE:is %s\n",parsed->value);
 
 		sanitised_value = malloc(sizeof(char) * strlen(parsed->value));
-		int x=0,y=0,counter=0;
-		while(parsed->value[y] != '\0'  && counter !=2){
+		int x=0, y=0, counter=0;
+		while(parsed->value[y] != '\0'  && counter != 2){
 		  if(parsed->value[y] != '"')
 		    sanitised_value[x++] = parsed->value[y++];
 		  else
@@ -164,34 +183,71 @@ int parse(){
 		}
 
 		else if(strcmp(parsed->key, "Description") == 0){
+		  printf("****************************************************************************DESSS\n");
 		  my_entity->description  = malloc(sizeof(strlen(sanitised_value)) +1 );
 		  strcpy(my_entity->description , sanitised_value);
 		}
 	
-		else if(strcmp(parsed->key, "Parent") == 0){
+		else if( strcmp(parsed->key, "Parent") == 0 ){
 		  int entity_no;
 		  my_entity->parent  = malloc(sizeof(strlen(sanitised_value)) +1 );
 		  strcpy(my_entity->parent , sanitised_value);
-		  /* find the parent entity in the container struct */
 
-		  if( (entity_no = find_entity(container, my_entity->parent))  == -1) {perror("NO SUCH ENTITY:");}
+		  /* find the parent entity in the container struct */
+		  if( (entity_no = find_entity(container, my_entity->parent))  == -1) {
+		    perror("NO SUCH ENTITY:");
+		    exit(0);
+		  }
 		  else
 		    {
-		      
 		      container->entity[entity_no].size +=1;
-		      if(container->entity[entity_no].size !=0)
+		      if(container->entity[entity_no].size != 0)
 		      
 		        container->entity[entity_no].relation = realloc( container->entity[entity_no].relation, sizeof(container->entity[entity_no].size)+1  );
 		      
 		      container->entity[entity_no].relation[container->entity[entity_no].size] = container->en_idx;		      
 		    }
 		}
-	
+
+		else if( strcmp(parsed->key, "RefersTo") == 0 ){
+
+		  my_entity->attributes->idx--;		
+		  my_entity->rsize +=1;
+		  int entity_no;
+
+		  /* find the parent entity in the container struct */
+		  if( (entity_no = find_entity(container, sanitised_value))  == -1) {
+		    perror("NO SUCH ENTITY:");
+		    exit(0);
+		  }
+		  
+		  else
+		    {
+		      container->entity[entity_no].ref_size += 1;
+		      my_entity->ref_p_size += 1;
+
+		      if(container->entity[entity_no].ref_size != 0){
+
+			container->entity[entity_no].references = realloc( container->entity[entity_no].references, sizeof(container->entity[entity_no].ref_size) + 1 );
+			my_entity->ref_parent = realloc( my_entity->ref_parent, sizeof(my_entity->ref_p_size ) + 1 );
+		      }
+
+		      
+		      container->entity[entity_no].references[container->entity[entity_no].ref_size] = container->en_idx;
+		      
+		      my_entity->ref_parent[my_entity->ref_p_size] = entity_no;
+				     
+		      printf("\n\n%s^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^%s\n", container->entity[entity_no].name, my_entity->name);
+		 
+		    }
+		}
+		
 		else if(strcmp(parsed->key, "ParentRelation") == 0){
 		  my_entity->parent_relation  = malloc(sizeof(strlen(sanitised_value)) + 1 );
 		  strcpy(my_entity->parent_relation , sanitised_value);
 
 		}
+
 		else if(strcmp(parsed->key, "AttrName") == 0){
 		  /* making the nullable flag false by default here */
 		  my_entity->attributes->attribute[my_entity->attributes->idx].is_nullable = 1;
@@ -227,7 +283,7 @@ int parse(){
 		    if(strcmp(parsed->value ,"\"False\"") == 0)
 		      my_entity->persistent = 0;
 		    else
-		      my_entity->persistent =1;
+		      my_entity->persistent = 1;
 		  }
 		}
 

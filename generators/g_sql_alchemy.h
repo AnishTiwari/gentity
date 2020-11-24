@@ -40,7 +40,6 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 
   printf("%d is the total attributes found!!!\n",container->en_idx);
 
-
   /* DEBUG PURPOSES */
   /* for(int i=0;i < container->en_idx ;i++){ */
   /*   printf(" %d ) %s is related to \t %d", i, container->entity[i].name, container->entity[0].relation[0] );  */
@@ -52,12 +51,13 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
   /* } */
 
   for(int c_i=0; c_i< container->en_idx; c_i++){
+
     en_t my_entity = &container->entity[c_i];
+
     /* opening file in append mode */
     fp1 = fopen( SQL_ALCHEMY_FILE_NAME,"a+");
   
     int special = 0;
-    printf("%d is the persistent value for the entity",my_entity->persistent);
     if(my_entity->persistent == 1){ 
 
       if(my_entity->size >= 0 ){
@@ -92,29 +92,33 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	    }	  
 	}
 	
-      }	  
-      if(my_entity->description != NULL){
-	fprintf(fp1,"\n# %s\n",my_entity->description);
       }
+      
+      if(my_entity->description != NULL){
+	fprintf(fp1,"\n# %s\n", my_entity->description);
+      }
+      
       char* temp_name = malloc(sizeof(char)* (strlen(my_entity->name))) ;
       strcpy(temp_name,my_entity->name);
       to_upper(&temp_name[0]);
       
-      fprintf(fp1, "class %s(db.Model):\n",temp_name);
+      fprintf(fp1, "class %s(db.Model):\n", temp_name);
       fprintf(fp1, "\t__tablename__ = '%s'", my_entity->name);
 
       /* Auto generating Id primary key value */
       fprintf(fp1, "\n\tid = db.Column(db.Integer, primary_key=True)");
 
       /* assigning the attribute values to class model attribute */
-      for(int i=0;i < my_entity->attributes->idx;i++){
+      for(int i=0; i < (my_entity->attributes->idx - my_entity->rsize ); i++){
+
+	printf("!!!!!!!!!!! %s!! %d ref size %d\n", my_entity->name, i, my_entity->rsize);
 
 	/* check if the attr is of type -ENUM */
-
 	if(strstr(my_entity->attributes->attribute[i].attr_name, "Enum") != NULL){
 	  fprintf(fp1, "\n\t%s = db.Column(db.Enum(%s))", my_entity->attributes->attribute[i].attr_name, my_entity->attributes->attribute[i].attr_name);
 
 	}
+	
 	else{
 	  dt_t temp_dt =  find_key(my_entity->attributes->attribute[i].type, my_dt);
 
@@ -128,7 +132,6 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	   *     string length eg: string(20) if length=20
 	   * :: else no need to do anything just write the basetype
 	   */
-
 	  char* got_basetype =  g_mapper(temp_dt->basetype);
 	  if(my_entity->attributes->attribute[i].is_nullable == 0)
 	    {
@@ -160,7 +163,7 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
       if(my_entity->parent != NULL){
 
 	/* ONE TO ONE RELATION */
-	if(strcmp(my_entity->parent_relation ,"OneToOne") == 0)
+	if(strcmp(my_entity->parent_relation, "OneToOne") == 0)
 	  {
 	    fprintf(fp1,"\n\t%s_id = db.Column(db.Integer, db.ForeignKey('%s.id'), unique=True)",my_entity->parent,my_entity->parent);
 	
@@ -171,12 +174,12 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 
 	  fprintf(fp1,"\n\t%s_id = db.Column(db.Integer, db.ForeignKey('%s.id'))",my_entity->parent,my_entity->parent);
 	}
+
 	/* MANY TO MANY */
 	else{
 
 	}
       }
-      /* if(special){ */
 
       if(my_entity->size >= 0 ){
 
@@ -240,13 +243,10 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	    strcpy(plural_child , container->entity[my_entity->relation[rel_idx]].name);
 	    pluralise_word(&plural_child[0]);
 
-
 	    char* plural_backref_parent;
 	    plural_backref_parent = malloc(sizeof(char) * strlen(my_entity->name));
 	    strcpy(plural_backref_parent , my_entity->name);
 	    pluralise_word(&plural_backref_parent[0]);
-
- 
 	      
 	    fprintf(fp1, "\n\t%s = db.relationship(\"%s\", secondary=%s, backref=db.backref(\"%s\") )",plural_child, caps_1, assoc_entity, plural_backref_parent);
 
@@ -256,12 +256,34 @@ void g_sql_alchemy(en_c_t container, dt_t dt){
 	    free(plural_backref_parent);
 	    free(plural_child);
 	  }
+	  
 	}
+
 	
       }
-      
-      /* } */
 
+	/* generating code for references */
+	for(int rel_idx =0; rel_idx <= my_entity->ref_size; rel_idx ++){
+	  printf("HELLO %s - %d\n", my_entity->name, my_entity->rsize);
+	  /* relation is one to many with child */
+	      char* temp_relation;
+	      temp_relation = malloc(sizeof(strlen(container->entity[my_entity->references[rel_idx]].name)));
+	      strcpy(temp_relation, container->entity[my_entity->references[rel_idx]].name);
+	      to_upper(&temp_relation[0]);
+
+	      char* plural_child;
+	      plural_child = malloc(sizeof(container->entity[my_entity->references[rel_idx]].name));
+	      strcpy(plural_child, container->entity[my_entity->references[rel_idx]].name);
+	      pluralise_word(&plural_child[0]);
+	      fprintf(fp1,"\n\t%s = db.relationship(\"%s\", backref=\"%s\")",plural_child, temp_relation, my_entity->name );
+	      free(plural_child);
+	      free(temp_relation);
+	}
+
+	for(int ref_parent = 0; ref_parent <= my_entity->ref_p_size; ref_parent++){
+	  fprintf(fp1,"\n\t%s_id = db.Column(db.Integer, db.ForeignKey('%s.id'))", container->entity[my_entity->ref_parent[ref_parent]].name,  container->entity[my_entity->ref_parent[ref_parent]].name);
+	  
+	}
       fputs("\n\n\n",fp1);  
       fclose(fp1);
     }

@@ -17,9 +17,11 @@ user_course = db.Table("user_course",
 	db.Column("user_id", db.Integer, db.ForeignKey("user.id")))
 
 
+
 schedule_course = db.Table("schedule_course",
 	db.Column("course_id", db.Integer, db.ForeignKey("course.id")),
 	db.Column("schedule_id", db.Integer, db.ForeignKey("schedule.id")))
+
 
 class Course(db.Model):
 	__tablename__ = 'course'
@@ -67,6 +69,7 @@ class Attendance(db.Model):
 	logged_time = db.Column(db.DateTime)
 	course_code = db.Column(db.String(40))
 	location_id = db.Column(db.Integer, db.ForeignKey('location.id'), unique=True)
+	feedbacks = db.relationship("Feedback", backref="attendance")
 
 
 class Schedule(db.Model):
@@ -81,6 +84,6 @@ class Feedback(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	rating = db.Column(db.Integer)
 	comment = db.Column(db.String(40))
-	course_code = db.Column(db.String(40))
+	attendance_id = db.Column(db.Integer, db.ForeignKey('attendance.id'))
 
 

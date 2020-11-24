@@ -14,8 +14,6 @@ void add_user(dt_t dt) {
 dt_t find_key( char* key, dt_t dt ){
   HASH_FIND_STR(s, key, dt);
   if(dt){
-    printf("\n \n finding for length \n\n");
-    printf("%s------- %d", dt->name, dt->length);
     dt_t temp_dt;
     temp_dt = dt;
     return temp_dt;

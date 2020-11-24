@@ -8,7 +8,7 @@ class FeedbackSchema(Schema):
 	rating = fields.Integer()
 	comment = fields.Str()
 	course_code = fields.Str()
-
+	attendance = fields.Nested('AttendanceSchema', exclude=('feedbacks', ))
 
 
 class ScheduleSchema(Schema):
@@ -16,6 +16,7 @@ class ScheduleSchema(Schema):
 	day = fields.Integer()
 	period = fields.Integer()
 	courses = fields.Nested('CourseSchema', many=True, exclude=('schedules', ))
+
 
 
 class AttendanceSchema(Schema):
@@ -28,6 +29,8 @@ class AttendanceSchema(Schema):
 	logged_time = fields.DateTime()
 	course_code = fields.Str()
 	location = fields.Nested('LocationSchema', exclude=('attendance', ))
+	feedbacks = fields.Nested('FeedbackSchema', many=True, exclude=('attendance', ))
+
 
 
 class LocationSchema(Schema):
@@ -51,6 +54,7 @@ class UserSchema(Schema):
 	icon_url = fields.Str()
 	credential_id = fields.Str()
 	courses = fields.Nested('CourseSchema', many=True, exclude=('users', ))
+
 
 
 class CourseSchema(Schema):

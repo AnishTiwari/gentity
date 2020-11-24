@@ -111,8 +111,33 @@ void g_angular(en_c_t container, dt_t dt, ec_t ec){
 	free(plural_child);
 
       }
-
+ 
     }
+    /* refersto to code generation */
+    for(int rel_idx =0; rel_idx <= my_entity->ref_size; rel_idx ++){
+
+      char* t = container->entity[my_entity->references[rel_idx]].name;
+      char* t1 = t;
+      char* plural_child;
+      plural_child = malloc(sizeof(char) * strlen(t));
+      strcpy(plural_child, t);
+      pluralise_word(&plural_child[0]);
+
+      char* self = my_entity->name;
+      char* plural_self;
+      plural_self = malloc(sizeof(char) * strlen(self));
+      strcpy(plural_self, self);
+      pluralise_word(&plural_self[0]);
+	  
+      char* temp_name2 = malloc(sizeof(char) * (strlen(t1))) ;
+      strcpy(temp_name2, t1);
+      to_upper(&temp_name2[0]);
+    
+      fprintf(fp1_, "\t%s: %s[],\n", plural_child, temp_name2);
+	  
+      free(plural_child);
+    }
+
     
     fprintf(fp1_, "}\n\n\n");
     fclose(fp1_); 

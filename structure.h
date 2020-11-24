@@ -39,7 +39,11 @@ struct entity{
   char* parent_relation;
   int  persistent;
   int size;
- 
+  int* references;
+  int ref_size;
+  int rsize;
+  int* ref_parent;
+  int ref_p_size;
 };
 
 struct entity_container{

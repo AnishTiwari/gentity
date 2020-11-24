@@ -1,6 +1,5 @@
 <Container>
 
-
     <Entity Name="staff" > 
         <Entity.Attributes> 
             <Attribute AttrName="staff_name" Type="DummyString" /> 
@@ -63,13 +62,18 @@
         </Entity.Attributes>
     </Entity> 
 
-        <Entity Name="feedback" >
-        <Entity.Attributes>
+        <Entity Name="feedback" > 
+        <Entity.Attributes> 
             <Attribute AttrName="rating" Type="DummyInteger" />
             <Attribute AttrName="comment" Type="DummyString" />
             <Attribute AttrName="course_code" Type="DummyString" /> 
 
-        </Entity.Attributes>
-    </Entity> 
+        </Entity.Attributes>  
+
+	<Entity.References> 
+	  <Reference RefersTo="attendance" /> 
+	</Entity.References> 
+	
+	</Entity>  
 
 </Container> 
